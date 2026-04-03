@@ -11,7 +11,7 @@ import SwiftUI
 struct Map_GuessrApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            HomeView()
         }
     }
 }

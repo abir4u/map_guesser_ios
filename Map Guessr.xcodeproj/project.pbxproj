@@ -34,22 +34,9 @@
 		BAF634572F7F388200037F52 /* Map GuessrUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Map GuessrUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		BAF6346B2F7F3ACE00037F52 /* Exceptions for "Map Guessr" folder in "Map Guessr" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				"Map-Guessr-Info.plist",
-			);
-			target = BAF6343F2F7F387F00037F52 /* Map Guessr */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		BAF634422F7F387F00037F52 /* Map Guessr */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				BAF6346B2F7F3ACE00037F52 /* Exceptions for "Map Guessr" folder in "Map Guessr" target */,
-			);
 			path = "Map Guessr";
 			sourceTree = "<group>";
 		};
