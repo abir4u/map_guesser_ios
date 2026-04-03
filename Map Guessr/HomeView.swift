@@ -15,7 +15,7 @@ struct HomeView: View {
                 MenuButton(title: "Play with Friends", color: .green) {  }
                 MenuButton(title: "Play Online", color: .orange) {  }
                 
-                NavigationLink(destination: Text("Local Play")) { EmptyView() }
+                NavigationLink(destination: Text("Local Play")) { EmptyView() } 
                 NavigationLink(destination: Text("Friends Play")) { EmptyView() }
                 NavigationLink(destination: Text("Online Play")) { EmptyView() }
             }
@@ -24,24 +24,6 @@ struct HomeView: View {
     }
 }
 
-struct MenuButton: View {
-    let title: String
-    let color: Color
-    let action: () -> Void
-    
-    var body: some View {
-        Button(action: action) {
-            Text(title)
-                .frame(maxWidth: .infinity)
-                .padding()
-                .background(color)
-                .foregroundColor(.white)
-                .cornerRadius(10)
-        }.padding(.horizontal)
-    }
-}
-
-
-#Preview {
-    HomeView()
-}
+//#Preview {
+//    HomeView()
+//}
