@@ -12,6 +12,7 @@ struct HomeView: View {
     @State private var showingLogoutAlert = false
     
     var body: some View {
+        var optionalName = ""
         NavigationStack(path: $viewModel.path) {
             ZStack {
                 VStack(spacing: 25) {
@@ -59,7 +60,9 @@ struct HomeView: View {
             .navigationDestination(for: GameMode.self) { mode in
                 switch mode {
                 case .play:
-                    Text("Map Outline Game Screen")
+                    SinglePlayView(guessText: Binding(
+                        get: { optionalName },
+                        set: { optionalName = $0 }))
                 case .friends:
                     Text("Friends Lobby")
                 case .online:
