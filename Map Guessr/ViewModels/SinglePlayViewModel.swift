@@ -42,14 +42,21 @@ class SinglePlayViewModel: ObservableObject {
                 } else {
                     self?.allCountries = names
                     UserDefaults.standard.set(names, forKey: "storedCountryList")
+                    let country = self?.pickACountry()
+                    UserDefaults.standard.set(country, forKey: "correctCountryName")
                     self?.selectTargetAndFetchMap()
                 }
             }
         }
     }
+    
+    private func pickACountry() -> String {
+        targetCountry = allCountries.randomElement() ?? ""
+        return targetCountry
+    }
 
     private func selectTargetAndFetchMap() {
-        targetCountry = allCountries.randomElement() ?? ""
+        let targetCountry = UserDefaults.standard.string(forKey: "correctCountryName") ?? "New Zealand"
         gameService.getCountryOutline(countryName: targetCountry) { [weak self] image in
             self?.isLoading = false
             if let image = image {
@@ -85,6 +92,7 @@ class SinglePlayViewModel: ObservableObject {
     private func handleEndGame() {
         isGameOver = true
         UserDefaults.standard.removeObject(forKey: "storedCountryList")
+        UserDefaults.standard.removeObject(forKey: "correctCountryName")
     }
 
     func filterCountries() {
