@@ -75,9 +75,9 @@ class AuthService: ObservableObject {
         DispatchQueue.main.async {
             self.isLoggedIn = false
             self.userEmail = nil
+            GIDSignIn.sharedInstance.signOut()
         }
-        
-        GIDSignIn.sharedInstance.signOut()
     }
+
 
 }
