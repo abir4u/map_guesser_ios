@@ -44,12 +44,12 @@ class AuthService: ObservableObject {
     }
     
     private func authenticateWithBackend(email: String, completion: @escaping (Bool) -> Void) {
-        guard let url = URL(string: "http://your-server-ip:8000/api/v1/auth/authenticate") else { return }
+        guard let url = URL(string: "http://192.168.1.18:8000/api/v1/auth/authenticate") else { return }
         
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        let body: [String: Any] = ["email": email]
+        let body: [String: String] = ["email": email]
         request.httpBody = try? JSONSerialization.data(withJSONObject: body)
         
         URLSession.shared.dataTask(with: request) { data, response, error in
