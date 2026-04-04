@@ -14,7 +14,14 @@ class HomeViewModel: ObservableObject {
     @Published var errorMessage: String?
     @Published var isLoading = false
     
-    private let authService = AuthService()
+    @ObservedObject var authService = AuthService()
+    private var cancellables = Set<AnyCancellable>()
+
+    init() {
+        authService.objectWillChange
+            .sink { [weak self] _ in self?.objectWillChange.send() }
+            .store(in: &cancellables)
+    }
     
     var isLoggedIn: Bool {
         authService.isLoggedIn
