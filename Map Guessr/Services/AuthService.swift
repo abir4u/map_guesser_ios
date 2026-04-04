@@ -14,7 +14,6 @@ class AuthService: ObservableObject {
     @Published var userEmail: String? = UserDefaults.standard.string(forKey: "userEmail")
     
     func handleGoogleLogin(completion: @escaping (Bool, String?) -> Void) {
-        // Use the helper instead of the deprecated .windows
         guard let rootViewController = UIApplication.shared.rootViewController else {
             completion(false, "Could not find root view controller")
             return
@@ -31,7 +30,6 @@ class AuthService: ObservableObject {
                 return
             }
             
-            // Proceed to your backend authentication
             self.authenticateWithBackend(email: email) { success in
                 if success {
                     self.saveUser(email: email)
