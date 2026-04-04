@@ -30,6 +30,7 @@ class HomeViewModel: ObservableObject {
                     self?.isLoading = false
                     if success {
                         self?.path.append(mode)
+                        self?.errorMessage = nil
                     } else {
                         self?.errorMessage = error
                     }
