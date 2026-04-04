@@ -67,4 +67,17 @@ class AuthService: ObservableObject {
         self.isLoggedIn = true
         self.userEmail = email
     }
+    
+    func logout() {
+        UserDefaults.standard.removeObject(forKey: "isLoggedIn")
+        UserDefaults.standard.removeObject(forKey: "userEmail")
+        
+        DispatchQueue.main.async {
+            self.isLoggedIn = false
+            self.userEmail = nil
+        }
+        
+        GIDSignIn.sharedInstance.signOut()
+    }
+
 }

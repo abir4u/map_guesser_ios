@@ -15,6 +15,10 @@ class HomeViewModel: ObservableObject {
     @Published var isLoading = false
     
     private let authService = AuthService()
+    
+    var isLoggedIn: Bool {
+        authService.isLoggedIn
+    }
 
     func handleButtonTap(mode: GameMode) {
         if authService.isLoggedIn {
@@ -33,4 +37,10 @@ class HomeViewModel: ObservableObject {
             }
         }
     }
+    
+    func logout() {
+        authService.logout()
+        path = NavigationPath()
+    }
+
 }

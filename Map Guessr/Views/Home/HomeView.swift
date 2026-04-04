@@ -9,7 +9,8 @@ import SwiftUI
 
 struct HomeView: View {
     @StateObject private var viewModel = HomeViewModel()
-
+    @State private var showingLogoutAlert = false
+    
     var body: some View {
         NavigationStack(path: $viewModel.path) {
             ZStack {
@@ -54,7 +55,6 @@ struct HomeView: View {
                         .shadow(radius: 10)
                 }
             }
-            .navigationTitle("Home")
             .navigationBarTitleDisplayMode(.inline)
             .navigationDestination(for: GameMode.self) { mode in
                 switch mode {
@@ -65,6 +65,25 @@ struct HomeView: View {
                 case .online:
                     Text("Global Matchmaking")
                 }
+            }
+            .toolbar {
+                if viewModel.isLoggedIn {
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        Button(action: { showingLogoutAlert = true }) {
+                            HStack {
+                                Text("Logout")
+                                Image(systemName: "rectangle.portrait.and.arrow.right")
+                            }
+                            .foregroundColor(.red)
+                        }
+                    }
+                }
+            }
+            .confirmationDialog("Are you sure you want to logout?", isPresented: $showingLogoutAlert, titleVisibility: .visible) {
+                Button("Yes, Logout", role: .destructive) {
+                    viewModel.logout()
+                }
+                Button("Cancel", role: .cancel) { }
             }
         }
     }
