@@ -89,7 +89,7 @@ class SinglePlayViewModel: ObservableObject {
         suggestions = []
     }
 
-    private func handleEndGame() {
+    func handleEndGame() {
         isGameOver = true
         UserDefaults.standard.removeObject(forKey: "storedCountryList")
         UserDefaults.standard.removeObject(forKey: "correctCountryName")

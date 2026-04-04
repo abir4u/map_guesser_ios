@@ -85,5 +85,8 @@ struct SinglePlayView: View {
         .padding()
         .navigationTitle("Single Play")
         .dismissKeyboardOnTap()
+        .confirmQuitOnBack {
+            viewModel.handleEndGame()
+        }
     }
 }
