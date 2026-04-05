@@ -48,8 +48,9 @@ class CoreGameService: ObservableObject {
     func getClue(origin: String, destination: String, completion: @escaping (DistanceResponse?) -> Void) {
         let userResponse = origin.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
         let correctAnswer = destination.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+        let urlString: String = "/geo/distance?country_a=\(userResponse)&country_b=\(correctAnswer)"
         guard let url = URL(string: "\(baseURL)/geo/distance?country_a=\(userResponse)&country_b=\(correctAnswer)") else { return }
-        
+        print(urlString)
         URLSession.shared.dataTask(with: url) { data, _, _ in
             guard let data = data,
                   let decoded = try? JSONDecoder().decode(DistanceResponse.self, from: data) else {

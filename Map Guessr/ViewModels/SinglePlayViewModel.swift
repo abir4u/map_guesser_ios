@@ -23,7 +23,6 @@ class SinglePlayViewModel: ObservableObject {
 
     private let gameService = CoreGameService()
     private var allCountries: [String] = []
-    private var targetCountry: String = ""
 
     init() { setupGame() }
 
@@ -31,27 +30,37 @@ class SinglePlayViewModel: ObservableObject {
         self.isLoading = true
         self.errorMessage = nil
         
-        if let saved = UserDefaults.standard.stringArray(forKey: "storedCountryList"), !saved.isEmpty {
-            self.allCountries = saved
-            selectTargetAndFetchMap()
-        } else {
-            gameService.getCountryNames { [weak self] names in
-                if names.isEmpty {
-                    self?.errorMessage = "Could not load country list. Check server connection."
-                    self?.isLoading = false
-                } else {
-                    self?.allCountries = names
-                    UserDefaults.standard.set(names, forKey: "storedCountryList")
-                    let country = self?.pickACountry()
-                    UserDefaults.standard.set(country, forKey: "correctCountryName")
-                    self?.selectTargetAndFetchMap()
-                }
+        let defaults = UserDefaults.standard
+        let savedCountry = defaults.string(forKey: "correctCountryName") ?? ""
+
+        if !savedCountry.isEmpty,
+           let savedList = defaults.stringArray(forKey: "storedCountryList"), !savedList.isEmpty {
+            self.allCountries = savedList
+            self.selectTargetAndFetchMap()
+            return
+        }
+
+        gameService.getCountryNames { [weak self] names in
+            guard let self = self else { return }
+            self.isLoading = false
+            
+            if names.isEmpty {
+                self.errorMessage = "Could not load country list. Check server connection."
+                return
             }
+
+            self.allCountries = names
+            defaults.set(names, forKey: "storedCountryList")
+            
+            let newCountry = self.pickACountry()
+            defaults.set(newCountry, forKey: "correctCountryName")
+            
+            self.selectTargetAndFetchMap()
         }
     }
     
     private func pickACountry() -> String {
-        targetCountry = allCountries.randomElement() ?? ""
+        let targetCountry = allCountries.randomElement() ?? ""
         return targetCountry
     }
 
@@ -66,14 +75,33 @@ class SinglePlayViewModel: ObservableObject {
             }
         }
     }
+    
+    func resetGame() {
+        self.guessesLeft = 5
+        self.lastDistance = ""
+        self.lastDirection = ""
+        self.guessText = ""
+        self.mapImage = nil
+        
+        UserDefaults.standard.removeObject(forKey: "correctCountryName")
+        
+        if !allCountries.isEmpty {
+            let country = pickACountry()
+            UserDefaults.standard.set(country, forKey: "correctCountryName")
+            selectTargetAndFetchMap()
+        } else {
+            setupGame()
+        }
+    }
 
     func submitGuess() {
         let currentGuess = guessText.trimmingCharacters(in: .whitespaces)
         guard !currentGuess.isEmpty else { return }
-
+        let targetCountry = UserDefaults.standard.string(forKey: "correctCountryName") ?? ""
+        
         if currentGuess.lowercased() == targetCountry.lowercased() {
+            resetGame()
             won = true
-            handleEndGame()
         } else {
             gameService.getClue(origin: currentGuess, destination: targetCountry) { [weak self] res in
                 guard let self = self else { return }
@@ -81,7 +109,10 @@ class SinglePlayViewModel: ObservableObject {
                     self.lastDistance = "\(Int(res.distance_km)) km"
                     self.lastDirection = res.direction
                     self.guessesLeft -= 1
-                    if self.guessesLeft == 0 { self.handleEndGame() }
+                    if self.guessesLeft == 0 {
+                        self.isGameOver = true
+                        self.resetGame()
+                    }
                 }
             }
         }

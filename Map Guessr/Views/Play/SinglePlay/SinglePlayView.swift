@@ -88,5 +88,18 @@ struct SinglePlayView: View {
         .confirmQuitOnBack {
             viewModel.handleEndGame()
         }
+        .sheet(isPresented: $viewModel.won) {
+            WinSheetView {
+                viewModel.won = false
+            }
+            .presentationDetents([.medium])
+            .interactiveDismissDisabled()
+        }
+        .alert("Game Over", isPresented: $viewModel.isGameOver) {
+            Button("Try Again") { viewModel.setupGame() }
+            Button("Quit", role: .cancel) { /* Navigation logic */ }
+        } message: {
+            Text("You ran out of guesses!")
+        }
     }
 }
