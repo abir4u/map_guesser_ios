@@ -108,11 +108,15 @@ class SinglePlayViewModel: ObservableObject {
                 if let res = res {
                     self.lastDistance = "\(Int(res.distance_km)) km"
                     self.lastDirection = res.direction
-                    self.guessesLeft -= 1
-                    if self.guessesLeft == 0 {
-                        self.isGameOver = true
-                        self.resetGame()
-                    }
+                } else {
+                    self.lastDistance = "Unknown distance"
+                    self.lastDirection = ""
+                }
+                
+                self.guessesLeft -= 1
+                if self.guessesLeft <= 0 {
+                    self.isGameOver = true
+                    self.resetGame()
                 }
             }
         }
