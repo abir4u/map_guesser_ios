@@ -86,7 +86,7 @@ struct SinglePlayView: View {
         .navigationTitle("Single Play")
         .dismissKeyboardOnTap()
         .confirmQuitOnBack {
-            viewModel.handleEndGame()
+            viewModel.clearGameDefaults()
         }
         .sheet(isPresented: $viewModel.won) {
             WinSheetView {
