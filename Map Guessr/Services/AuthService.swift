@@ -17,7 +17,7 @@ class AuthService: ObservableObject {
     
     func handleGoogleLogin() async throws {
         guard let rootViewController = UIApplication.shared.rootViewController else {
-            throw URLError(.cannotFindHost) // Or a custom Error
+            throw URLError(.cannotFindHost)
         }
         
         let result = try await GIDSignIn.sharedInstance.signIn(withPresenting: rootViewController)
