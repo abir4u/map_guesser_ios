@@ -70,11 +70,9 @@ struct HomeView: View {
                 if viewModel.isLoggedIn {
                     ToolbarItem(placement: .navigationBarTrailing) {
                         Button(action: { showingLogoutAlert = true }) {
-                            HStack {
-                                Text("Logout")
-                                Image(systemName: "rectangle.portrait.and.arrow.right")
-                            }
-                            .foregroundColor(.red)
+                            Image(systemName: "rectangle.portrait.and.arrow.right")
+                                .padding(EdgeInsets(top: 5, leading: 10, bottom: 5, trailing: 5))
+                                .foregroundColor(.red)
                         }
                     }
                 }
