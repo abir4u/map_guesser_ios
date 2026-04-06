@@ -18,11 +18,10 @@ nonisolated struct DistanceResponse: Decodable, Sendable {
     let direction: String
 }
 
-private let baseURL = "http://192.168.1.18:8000/api/v1"
 
 class CoreGameService: ObservableObject {
     func getCountryNames(completion: @escaping ([String]) -> Void) {
-        guard let url = URL(string: "\(baseURL)/geo/countries") else { return }
+        guard let url = URL(string: "\(APIConfig.Endpoints.countries)") else { return }
         URLSession.shared.dataTask(with: url) { data, _, _ in
             guard let data = data,
                   let decoded = try? JSONDecoder().decode(CountryResponse.self, from: data) else {
@@ -35,7 +34,7 @@ class CoreGameService: ObservableObject {
 
     func getCountryOutline(countryName: String, completion: @escaping (Image?) -> Void) {
         let escaped = countryName.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? countryName
-        guard let url = URL(string: "\(baseURL)/geo/outline/\(escaped)") else { return }
+        guard let url = URL(string: "\(APIConfig.Endpoints.outline)/\(escaped)") else { return }
         URLSession.shared.dataTask(with: url) { data, _, _ in
             guard let data = data, let uiImage = UIImage(data: data) else {
                 DispatchQueue.main.async { completion(nil) }
@@ -48,7 +47,7 @@ class CoreGameService: ObservableObject {
     func getClue(origin: String, destination: String, completion: @escaping (DistanceResponse?) -> Void) {
         let userResponse = origin.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
         let correctAnswer = destination.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
-        guard let url = URL(string: "\(baseURL)/geo/distance?country_a=\(userResponse)&country_b=\(correctAnswer)") else { return }
+        guard let url = URL(string: "\(APIConfig.Endpoints.distance)?country_a=\(userResponse)&country_b=\(correctAnswer)") else { return }
         URLSession.shared.dataTask(with: url) { data, _, _ in
             guard let data = data,
                   let decoded = try? JSONDecoder().decode(DistanceResponse.self, from: data) else {

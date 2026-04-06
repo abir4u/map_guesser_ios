@@ -42,7 +42,7 @@ class AuthService: ObservableObject {
     }
     
     private func authenticateWithBackend(email: String, completion: @escaping (Bool) -> Void) {
-        guard let url = URL(string: "http://192.168.1.18:8000/api/v1/auth/authenticate") else { return }
+        guard let url = URL(string: "\(APIConfig.Endpoints.auth)") else { return }
         
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
@@ -76,6 +76,4 @@ class AuthService: ObservableObject {
             GIDSignIn.sharedInstance.signOut()
         }
     }
-
-
 }
