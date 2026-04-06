@@ -8,60 +8,53 @@
 import Foundation
 import GoogleSignIn
 internal import Combine
+import UIKit
 
+@MainActor
 class AuthService: ObservableObject {
     @Published var isLoggedIn: Bool = UserDefaults.standard.bool(forKey: "isLoggedIn")
     @Published var userEmail: String? = UserDefaults.standard.string(forKey: "userEmail")
     
-    func handleGoogleLogin(completion: @escaping (Bool, String?) -> Void) {
+    func handleGoogleLogin() async throws {
         guard let rootViewController = UIApplication.shared.rootViewController else {
-            completion(false, "Could not find root view controller")
-            return
+            throw URLError(.cannotFindHost)
         }
         
-        GIDSignIn.sharedInstance.signIn(withPresenting: rootViewController) { result, error in
-            if let error = error {
-                completion(false, error.localizedDescription)
-                return
-            }
-            
-            guard let user = result?.user, let email = user.profile?.email else {
-                completion(false, "Failed to retrieve user email")
-                return
-            }
-            
-            self.authenticateWithBackend(email: email) { success in
-                if success {
-                    self.saveUser(email: email)
-                    completion(true, nil)
-                } else {
-                    completion(false, "Backend Authentication Failed")
-                }
-            }
+        let result = try await GIDSignIn.sharedInstance.signIn(withPresenting: rootViewController)
+        
+        guard let email = result.user.profile?.email else {
+            throw NSError(domain: "AuthService", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to retrieve user email"])
+        }
+        
+        let success = try await authenticateWithBackend(email: email)
+        
+        if success {
+            saveUser(email: email)
+        } else {
+            throw NSError(domain: "AuthService", code: -2, userInfo: [NSLocalizedDescriptionKey: "Backend Authentication Failed"])
         }
     }
     
-    private func authenticateWithBackend(email: String, completion: @escaping (Bool) -> Void) {
-        guard let url = URL(string: "\(APIConfig.Endpoints.auth)") else { return }
+    private func authenticateWithBackend(email: String) async throws -> Bool {
+        guard let url = URL(string: APIConfig.Endpoints.auth) else { return false }
         
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        let body: [String: String] = ["email": email]
+        
+        let body = ["email": email]
         request.httpBody = try? JSONSerialization.data(withJSONObject: body)
         
-        URLSession.shared.dataTask(with: request) { data, response, error in
-            guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-                DispatchQueue.main.async { completion(false) }
-                return
-            }
-            DispatchQueue.main.async { completion(true) }
-        }.resume()
+        let (_, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse else { return false }
+        return httpResponse.statusCode == 200
     }
     
     private func saveUser(email: String) {
         UserDefaults.standard.set(true, forKey: "isLoggedIn")
         UserDefaults.standard.set(email, forKey: "userEmail")
+        
         self.isLoggedIn = true
         self.userEmail = email
     }
@@ -70,10 +63,8 @@ class AuthService: ObservableObject {
         UserDefaults.standard.removeObject(forKey: "isLoggedIn")
         UserDefaults.standard.removeObject(forKey: "userEmail")
         
-        DispatchQueue.main.async {
-            self.isLoggedIn = false
-            self.userEmail = nil
-            GIDSignIn.sharedInstance.signOut()
-        }
+        GIDSignIn.sharedInstance.signOut()
+        self.isLoggedIn = false
+        self.userEmail = nil
     }
 }
