@@ -28,4 +28,4 @@ how far away the guessed country is from the actual country and in what directio
 
 ## Known Bugs
 
-[Click on this link to find the list of known Bugs](Map Guessr/Resources/Docs/KnownBugs.md)
+[Click on this link to find the list of known Bugs](<Map Guessr/Resources/Docs/KnownBugs.md>)
