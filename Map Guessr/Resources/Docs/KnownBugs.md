@@ -14,4 +14,5 @@
 | 6 | Refactor from completion handlers to async/await for better app performance | Medium | **Testing** |
 | 7 | Notify backend of win scenario | Medium | Backlog |
 | 8 | Implement record keeping feature for players | Low | Backlog |
-| 9 | Clues should not be shown for guesses that are not valid country names and an error message should clearly notify that to the player | HIGH | **In Progress** |
+| 9 | Clues should not be shown for guesses that are not valid country names and an error message should clearly notify that to the player | HIGH | Backlog |
+| 10 | Must store locally the number of guesses left for a game in progress | HIGH | Backlog |
