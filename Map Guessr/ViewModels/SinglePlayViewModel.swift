@@ -38,25 +38,24 @@ class SinglePlayViewModel: ObservableObject {
             self.allCountries = savedList
             self.selectTargetAndFetchMap()
             return
-        }
+        } else {
+            gameService.getCountryNames { [weak self] names in
+                guard let self = self else { return }
+                self.isLoading = false
+                
+                if names.isEmpty {
+                    self.errorMessage = "Could not load country list. Check server connection."
+                    return
+                }
 
-        gameService.getCountryNames { [weak self] names in
-            guard let self = self else { return }
-            self.isLoading = false
-            
-            if names.isEmpty {
-                self.errorMessage = "Could not load country list. Check server connection."
-                return
+                self.allCountries = names
+                defaults.set(names, forKey: "storedCountryList")
+                
+                let newCountry = self.pickACountry()
+                defaults.set(newCountry, forKey: "correctCountryName")
             }
-
-            self.allCountries = names
-            defaults.set(names, forKey: "storedCountryList")
-            
-            let newCountry = self.pickACountry()
-            defaults.set(newCountry, forKey: "correctCountryName")
-            
-            self.selectTargetAndFetchMap()
         }
+        self.selectTargetAndFetchMap()
     }
     
     private func pickACountry() -> String {
