@@ -53,9 +53,9 @@ class SinglePlayViewModel: ObservableObject {
                 
                 let newCountry = self.pickACountry()
                 defaults.set(newCountry, forKey: "correctCountryName")
+                self.selectTargetAndFetchMap()
             }
         }
-        self.selectTargetAndFetchMap()
     }
     
     private func pickACountry() -> String {

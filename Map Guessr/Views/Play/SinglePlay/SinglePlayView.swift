@@ -85,10 +85,10 @@ struct SinglePlayView: View {
                 Text(name)
                     .padding(.vertical, 8)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .contentShape(Rectangle()) // Makes the whole row tappable
+                    .contentShape(Rectangle())
                     .onTapGesture {
                         viewModel.guessText = name
-                        isTextFieldFocused = false // Dismisses keyboard
+                        isTextFieldFocused = false
                     }
                 Divider()
             }
