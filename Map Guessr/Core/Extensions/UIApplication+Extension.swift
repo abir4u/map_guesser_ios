@@ -9,7 +9,6 @@ import UIKit
 
 extension UIApplication {
     var rootViewController: UIViewController? {
-        // Find the active window scene and its root view controller
         return self.connectedScenes
             .compactMap { $0 as? UIWindowScene }
             .flatMap { $0.windows }

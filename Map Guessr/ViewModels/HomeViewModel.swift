@@ -9,20 +9,14 @@ import Foundation
 import SwiftUI
 internal import Combine
 
+@MainActor
 class HomeViewModel: ObservableObject {
     @Published var path = NavigationPath()
     @Published var errorMessage: String?
     @Published var isLoading = false
     
-    @ObservedObject var authService = AuthService()
-    private var cancellables = Set<AnyCancellable>()
+    @Published var authService = AuthService()
 
-    init() {
-        authService.objectWillChange
-            .sink { [weak self] _ in self?.objectWillChange.send() }
-            .store(in: &cancellables)
-    }
-    
     var isLoggedIn: Bool {
         authService.isLoggedIn
     }
@@ -31,24 +25,28 @@ class HomeViewModel: ObservableObject {
         if authService.isLoggedIn {
             path.append(mode)
         } else {
-            isLoading = true
-            authService.handleGoogleLogin { [weak self] success, error in
-                DispatchQueue.main.async {
-                    self?.isLoading = false
-                    if success {
-                        self?.path.append(mode)
-                        self?.errorMessage = nil
-                    } else {
-                        self?.errorMessage = error
-                    }
-                }
+            Task {
+                await loginAndNavigate(to: mode)
             }
         }
+    }
+    
+    private func loginAndNavigate(to mode: GameMode) async {
+        isLoading = true
+        errorMessage = nil
+        
+        do {
+            try await authService.handleGoogleLogin()
+            path.append(mode)
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+        
+        isLoading = false
     }
     
     func logout() {
         authService.logout()
         path = NavigationPath()
     }
-
 }
