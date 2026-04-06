@@ -60,10 +60,12 @@ class SinglePlayViewModel: ObservableObject {
         self.allCountries = names
         defaults.set(names, forKey: "storedCountryList")
         
-        let newCountry = self.pickACountry()
-        defaults.set(newCountry, forKey: "correctCountryName")
-        
-        await selectTargetAndFetchMap()
+        await handleFailingOutlineApi {
+            let newCountry = self.pickACountry()
+            defaults.set(newCountry, forKey: "correctCountryName")
+            
+            await selectTargetAndFetchMap()
+        }
     }
     
     private func pickACountry() -> String {
@@ -94,9 +96,11 @@ class SinglePlayViewModel: ObservableObject {
             defaults.removeObject(forKey: "correctCountryName")
             
             if !allCountries.isEmpty {
-                let country = pickACountry()
-                defaults.set(country, forKey: "correctCountryName")
-                await selectTargetAndFetchMap()
+                await handleFailingOutlineApi {
+                    let country = pickACountry()
+                    defaults.set(country, forKey: "correctCountryName")
+                    await selectTargetAndFetchMap()
+                }
             } else {
                 await setupGame()
             }
@@ -152,5 +156,27 @@ class SinglePlayViewModel: ObservableObject {
             "South": 180, "South-West": 225, "West": 270, "North-West": 315
         ]
         return mapping[lastDirection] ?? 0
+    }
+    
+    /*
+     This is a temporary solution due to limitation of the API Country outline
+     */
+    private func handleFailingOutlineApi(tasks: () async -> Void) async {
+        var attempts = 0
+        let maxRetries = 5
+        
+        repeat {
+            self.errorMessage = nil
+            await tasks()
+            if self.errorMessage == nil {
+                return
+            }
+            
+            attempts += 1
+            print("Retry attempt \(attempts) due to: \(self.errorMessage ?? "Unknown error")")
+            
+        } while attempts < maxRetries
+        
+        // Do the needful to show that there is a server problem and the game cannot be played at the moment.
     }
 }
