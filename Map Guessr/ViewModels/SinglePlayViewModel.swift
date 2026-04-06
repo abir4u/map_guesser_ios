@@ -12,7 +12,6 @@ internal import Combine
 class SinglePlayViewModel: ObservableObject {
     @Published var mapImage: Image?
     @Published var guessText: String = ""
-    @Published var guessesLeft: Int = 5
     @Published var lastDistance: String = ""
     @Published var lastDirection: String = ""
     @Published var suggestions: [String] = []
@@ -24,6 +23,7 @@ class SinglePlayViewModel: ObservableObject {
 
     private let gameService = CoreGameService()
     private var allCountries: [String] = []
+    private let defaults = UserDefaults.standard
 
     init() {
         Task {
@@ -35,14 +35,18 @@ class SinglePlayViewModel: ObservableObject {
         self.isLoading = true
         self.errorMessage = nil
         
-        let defaults = UserDefaults.standard
         let savedCountry = defaults.string(forKey: "correctCountryName") ?? ""
         let savedList = defaults.stringArray(forKey: "storedCountryList") ?? []
+        let guessesLeft = defaults.integer(forKey: "guessesLeft")
 
         if !savedCountry.isEmpty && !savedList.isEmpty {
             self.allCountries = savedList
             await selectTargetAndFetchMap()
             return
+        }
+        
+        if guessesLeft == 0 {
+            defaults.set(5, forKey: "guessesLeft")
         }
 
         let names = await gameService.getCountryNames()
@@ -68,7 +72,7 @@ class SinglePlayViewModel: ObservableObject {
 
     private func selectTargetAndFetchMap() async {
         self.isLoading = true
-        let targetCountry = UserDefaults.standard.string(forKey: "correctCountryName") ?? "New Zealand"
+        let targetCountry = defaults.string(forKey: "correctCountryName") ?? "New Zealand"
         
         if let image = await gameService.getCountryOutline(countryName: targetCountry) {
             self.mapImage = image
@@ -81,17 +85,17 @@ class SinglePlayViewModel: ObservableObject {
     
     func resetGame() {
         Task {
-            self.guessesLeft = 5
             self.lastDistance = ""
             self.lastDirection = ""
             self.guessText = ""
             self.mapImage = nil
             
-            UserDefaults.standard.removeObject(forKey: "correctCountryName")
+            defaults.set(5, forKey: "guessesLeft")
+            defaults.removeObject(forKey: "correctCountryName")
             
             if !allCountries.isEmpty {
                 let country = pickACountry()
-                UserDefaults.standard.set(country, forKey: "correctCountryName")
+                defaults.set(country, forKey: "correctCountryName")
                 await selectTargetAndFetchMap()
             } else {
                 await setupGame()
@@ -102,7 +106,7 @@ class SinglePlayViewModel: ObservableObject {
     func submitGuess() {
         let currentGuess = guessText.trimmingCharacters(in: .whitespaces)
         guard !currentGuess.isEmpty else { return }
-        let targetCountry = UserDefaults.standard.string(forKey: "correctCountryName") ?? ""
+        let targetCountry = defaults.string(forKey: "correctCountryName") ?? ""
         
         if currentGuess.lowercased() == targetCountry.lowercased() {
             won = true
@@ -117,8 +121,10 @@ class SinglePlayViewModel: ObservableObject {
                     self.lastDirection = ""
                 }
                 
-                self.guessesLeft -= 1
-                if self.guessesLeft <= 0 {
+                var guessesLeft = UserDefaults.standard.integer(forKey: "guessesLeft")
+                guessesLeft = guessesLeft - 1
+                UserDefaults.standard.set(guessesLeft, forKey: "guessesLeft")
+                if guessesLeft <= 0 {
                     self.isGameOver = true
                     resetGame()
                 }
@@ -129,8 +135,9 @@ class SinglePlayViewModel: ObservableObject {
     }
 
     func clearGameDefaults() {
-        UserDefaults.standard.removeObject(forKey: "storedCountryList")
-        UserDefaults.standard.removeObject(forKey: "correctCountryName")
+        defaults.set(5, forKey: "guessesLeft")
+        defaults.removeObject(forKey: "storedCountryList")
+        defaults.removeObject(forKey: "correctCountryName")
     }
 
     func filterCountries() {

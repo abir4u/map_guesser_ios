@@ -65,9 +65,9 @@ struct SinglePlayView: View {
     // --- Sub-views to keep code clean ---
     
     private var headerSection: some View {
-        Text("\(viewModel.guessesLeft)/5 Guesses Left")
+        Text("\(UserDefaults.standard.integer(forKey: "guessesLeft"))/5 Guesses Left")
             .font(.title3.bold())
-            .foregroundColor(viewModel.guessesLeft < 2 ? .red : .primary)
+            .foregroundColor(UserDefaults.standard.integer(forKey: "guessesLeft") < 2 ? .red : .primary)
     }
 
     private var mapSection: some View {
