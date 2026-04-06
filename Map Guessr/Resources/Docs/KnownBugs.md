@@ -12,3 +12,5 @@
 | 4 | Backend server is small | Low | Backlog |
 | 5 | Better loading indicators are needed for better player experience | Medium | In Progress |
 | 6 | Refactor from completion handlers to async/await for better app performance | Medium | In Progress |
+| 7 | Notify backend of win scenario | Medium | Backlog |
+| 8 | Implement record keeping feature for players | Low | Backlog |
