@@ -11,3 +11,4 @@
 | 3 | Country outline are of low quality | Medium | Backlog |
 | 4 | Backend server is small | Low | Backlog |
 | 5 | Better loading indicators are needed for better player experience | Medium | In Progress |
+| 6 | Refactor from completion handlers to async/await for better app performance | Medium | In Progress |
