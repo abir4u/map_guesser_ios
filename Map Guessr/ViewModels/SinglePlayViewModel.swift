@@ -8,6 +8,7 @@
 import SwiftUI
 internal import Combine
 
+@MainActor
 class SinglePlayViewModel: ObservableObject {
     @Published var mapImage: Image?
     @Published var guessText: String = ""
@@ -24,72 +25,77 @@ class SinglePlayViewModel: ObservableObject {
     private let gameService = CoreGameService()
     private var allCountries: [String] = []
 
-    init() { setupGame() }
+    init() {
+        Task {
+            await setupGame()
+        }
+    }
 
-    func setupGame() {
+    func setupGame() async {
         self.isLoading = true
         self.errorMessage = nil
         
         let defaults = UserDefaults.standard
         let savedCountry = defaults.string(forKey: "correctCountryName") ?? ""
+        let savedList = defaults.stringArray(forKey: "storedCountryList") ?? []
 
-        if !savedCountry.isEmpty,
-           let savedList = defaults.stringArray(forKey: "storedCountryList"), !savedList.isEmpty {
+        if !savedCountry.isEmpty && !savedList.isEmpty {
             self.allCountries = savedList
-            self.selectTargetAndFetchMap()
+            await selectTargetAndFetchMap()
             return
-        } else {
-            gameService.getCountryNames { [weak self] names in
-                guard let self = self else { return }
-                self.isLoading = false
-                
-                if names.isEmpty {
-                    self.errorMessage = "Could not load country list. Check server connection."
-                    return
-                }
-
-                self.allCountries = names
-                defaults.set(names, forKey: "storedCountryList")
-                
-                let newCountry = self.pickACountry()
-                defaults.set(newCountry, forKey: "correctCountryName")
-                self.selectTargetAndFetchMap()
-            }
         }
+
+        let names = await gameService.getCountryNames()
+        
+        if names.isEmpty {
+            self.isLoading = false
+            self.errorMessage = "Could not load country list. Check server connection."
+            return
+        }
+
+        self.allCountries = names
+        defaults.set(names, forKey: "storedCountryList")
+        
+        let newCountry = self.pickACountry()
+        defaults.set(newCountry, forKey: "correctCountryName")
+        
+        await selectTargetAndFetchMap()
     }
     
     private func pickACountry() -> String {
-        let targetCountry = allCountries.randomElement() ?? ""
-        return targetCountry
+        allCountries.randomElement() ?? "New Zealand"
     }
 
-    private func selectTargetAndFetchMap() {
+    private func selectTargetAndFetchMap() async {
+        self.isLoading = true
         let targetCountry = UserDefaults.standard.string(forKey: "correctCountryName") ?? "New Zealand"
-        gameService.getCountryOutline(countryName: targetCountry) { [weak self] image in
-            self?.isLoading = false
-            if let image = image {
-                self?.mapImage = image
-            } else {
-                self?.errorMessage = "Failed to load map outline."
-            }
+        
+        if let image = await gameService.getCountryOutline(countryName: targetCountry) {
+            self.mapImage = image
+            self.errorMessage = nil
+        } else {
+            self.errorMessage = "Failed to load map outline."
         }
+        self.isLoading = false
     }
     
     func resetGame() {
-        self.guessesLeft = 5
-        self.lastDistance = ""
-        self.lastDirection = ""
-        self.guessText = ""
-        self.mapImage = nil
-        
-        UserDefaults.standard.removeObject(forKey: "correctCountryName")
-        
-        if !allCountries.isEmpty {
-            let country = pickACountry()
-            UserDefaults.standard.set(country, forKey: "correctCountryName")
-            selectTargetAndFetchMap()
-        } else {
-            setupGame()
+        Task {
+            self.guessesLeft = 5
+            self.lastDistance = ""
+            self.lastDirection = ""
+            self.guessText = ""
+            self.mapImage = nil
+            
+            UserDefaults.standard.removeObject(forKey: "correctCountryName")
+            
+            if !allCountries.isEmpty {
+                let country = pickACountry()
+                UserDefaults.standard.set(country, forKey: "correctCountryName")
+                await selectTargetAndFetchMap()
+            } else {
+                await setupGame()
+            }
         }
     }
 
@@ -99,12 +105,11 @@ class SinglePlayViewModel: ObservableObject {
         let targetCountry = UserDefaults.standard.string(forKey: "correctCountryName") ?? ""
         
         if currentGuess.lowercased() == targetCountry.lowercased() {
-            resetGame()
             won = true
+            resetGame()
         } else {
-            gameService.getClue(origin: currentGuess, destination: targetCountry) { [weak self] res in
-                guard let self = self else { return }
-                if let res = res {
+            Task {
+                if let res = await gameService.getClue(origin: currentGuess, destination: targetCountry) {
                     self.lastDistance = "\(Int(res.distance_km)) km"
                     self.lastDirection = res.direction
                 } else {
@@ -115,7 +120,7 @@ class SinglePlayViewModel: ObservableObject {
                 self.guessesLeft -= 1
                 if self.guessesLeft <= 0 {
                     self.isGameOver = true
-                    self.resetGame()
+                    resetGame()
                 }
             }
         }

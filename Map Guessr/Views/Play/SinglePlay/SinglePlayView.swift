@@ -52,7 +52,11 @@ struct SinglePlayView: View {
             WinSheetView { viewModel.won = false }.presentationDetents([.medium]).interactiveDismissDisabled()
         }
         .alert("Game Over", isPresented: $viewModel.isGameOver) {
-            Button("Try Again") { viewModel.setupGame() }
+            Button("Try Again") {
+                Task {
+                    await viewModel.setupGame()
+                }
+            }
         } message: {
             Text("You ran out of guesses!")
         }
