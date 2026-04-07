@@ -11,7 +11,7 @@ struct GuessRow: View {
     let number: String
     let name: String
     let distance: String
-    let direction: String
+    let direction: Double
     
     var body: some View {
         HStack {
@@ -19,7 +19,9 @@ struct GuessRow: View {
             Text(name).fontWeight(.medium)
             Spacer()
             Text(distance).font(.subheadline).foregroundColor(.secondary)
-            Image(systemName: direction).foregroundColor(.blue)
+            Image(systemName: "arrow.up")
+                .rotationEffect(.degrees(direction))
+                .font(.title).foregroundColor(.blue)
         }
         .padding()
         .background(Color(.secondarySystemBackground))

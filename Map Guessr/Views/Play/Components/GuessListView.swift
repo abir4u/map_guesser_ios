@@ -12,15 +12,11 @@ struct Guess: Identifiable {
     let num: String
     let name: String
     let dist: String
-    let icon: String
+    let direction: Double
 }
 
 struct GuessListView: View {
-    let guesses: [Guess] = [
-        Guess(num: "1/5", name: "Japan", dist: "7,800 km", icon: "arrow.up.right"),
-        Guess(num: "2/5", name: "Brazil", dist: "15,200 km", icon: "arrow.down.left"),
-        Guess(num: "3/5", name: "Australia", dist: "4,358 km", icon: "arrow.up")
-    ]
+    let guesses: [Guess]
 
     var body: some View {
         if !guesses.isEmpty {
@@ -31,18 +27,17 @@ struct GuessListView: View {
 
                 ScrollView {
                     VStack(spacing: 10) {
-                        ForEach(guesses.indices.reversed(), id: \.self) { index in
+                        ForEach(guesses.reversed()) { guess in
                             GuessRow(
-                                number: guesses[index].num,
-                                name: guesses[index].name,
-                                distance: guesses[index].dist,
-                                direction: guesses[index].icon
+                                number: guess.num,
+                                name: guess.name,
+                                distance: guess.dist,
+                                direction: guess.direction
                             )
                         }
                     }
                     .padding()
                 }
-                .frame(height: 250)
                 .background(Color(.systemGroupedBackground))
                 .cornerRadius(12)
                 .padding(.horizontal)

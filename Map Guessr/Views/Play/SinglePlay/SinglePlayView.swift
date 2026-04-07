@@ -39,6 +39,7 @@ struct SinglePlayView: View {
 
                     guessButton
                     distanceResult
+                    GuessListView(guesses: viewModel.guesses)
                     
                     Spacer(minLength: 100)
                 }

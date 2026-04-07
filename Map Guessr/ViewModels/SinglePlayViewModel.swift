@@ -15,6 +15,7 @@ class SinglePlayViewModel: ObservableObject {
     @Published var lastDistance: String = ""
     @Published var lastDirection: String = ""
     @Published var suggestions: [String] = []
+    @Published var guesses: [Guess] = []
     
     @Published var isLoading = false
     @Published var errorMessage: String?
@@ -91,6 +92,7 @@ class SinglePlayViewModel: ObservableObject {
             self.lastDirection = ""
             self.guessText = ""
             self.mapImage = nil
+            self.guesses = []
             
             defaults.set(5, forKey: "guessesLeft")
             defaults.removeObject(forKey: "correctCountryName")
@@ -126,8 +128,15 @@ class SinglePlayViewModel: ObservableObject {
                 }
                 
                 var guessesLeft = UserDefaults.standard.integer(forKey: "guessesLeft")
+                let guessNumber = "\(6 - guessesLeft)/5"
                 guessesLeft = guessesLeft - 1
                 UserDefaults.standard.set(guessesLeft, forKey: "guessesLeft")
+                let newGuess = Guess(
+                    num: guessNumber,
+                    name: currentGuess,
+                    dist: self.lastDistance,
+                    direction: directionRotation)
+                self.guesses.append(newGuess)
                 if guessesLeft <= 0 {
                     self.isGameOver = true
                     resetGame()
