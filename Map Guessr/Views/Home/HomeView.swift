@@ -31,7 +31,7 @@ struct HomeView: View {
 //                    
 //                    MenuButton(title: "Play Online", color: .orange) {
 //                        viewModel.handleButtonTap(mode: .online)
-                    }
+//                    }
 
                     if let error = viewModel.errorMessage {
                         Text(error)
