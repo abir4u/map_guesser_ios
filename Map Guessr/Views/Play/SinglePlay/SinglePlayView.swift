@@ -31,7 +31,7 @@ struct SinglePlayView: View {
                                     }
                                 }
                             
-                            if !viewModel.suggestions.isEmpty {
+                            if isTextFieldFocused {
                                 predictionList
                             }
                         }
