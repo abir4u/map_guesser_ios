@@ -16,4 +16,4 @@
 | 8 | Implement record keeping feature for players | Low | Backlog |
 | 9 | Clues should not be shown for guesses that are not valid country names and an error message should clearly notify that to the player | HIGH | Backlog |
 | 10 | ~~Must store locally the number of guesses left for a game in progress~~ | HIGH | Done |
-| 11 | Country Outline API gets triggered twice before and after click of Try again after defeat | Low | Backlog |
+| 11 | ~~Country Outline API gets triggered twice before and after click of Try again after defeat~~ | Low | Done |
