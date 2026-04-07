@@ -118,7 +118,11 @@ class SinglePlayViewModel: ObservableObject {
             won = true
             resetGame()
         } else {
+            isLoading = true
             Task {
+                defer {
+                    Task { @MainActor in self.isLoading = false }
+                }
                 if let res = await gameService.getClue(origin: currentGuess, destination: targetCountry) {
                     self.lastDistance = "\(Int(res.distance_km)) km"
                     self.lastDirection = res.direction

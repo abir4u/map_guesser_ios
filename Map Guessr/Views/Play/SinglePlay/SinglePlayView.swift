@@ -12,50 +12,56 @@ struct SinglePlayView: View {
     @FocusState private var isTextFieldFocused: Bool
 
     var body: some View {
-        ScrollViewReader { proxy in
-            ScrollView {
-                VStack(spacing: 20) {
-                    headerSection
-                    mapSection
+        ZStack {
+            ScrollViewReader { proxy in
+                ScrollView {
+                    VStack(spacing: 20) {
+                        headerSection
+                        mapSection
 
-                    VStack(alignment: .leading, spacing: 0) {
-                        TextField("Enter country name...", text: $viewModel.guessText)
-                            .textFieldStyle(.roundedBorder)
-                            .focused($isTextFieldFocused)
-                            .disableAutocorrection(true)
-                            .onChange(of: viewModel.guessText) { _, _ in
-                                viewModel.filterCountries()
-                                withAnimation {
-                                    proxy.scrollTo("inputArea", anchor: .top)
+                        VStack(alignment: .leading, spacing: 0) {
+                            TextField("Enter country name...", text: $viewModel.guessText)
+                                .textFieldStyle(.roundedBorder)
+                                .focused($isTextFieldFocused)
+                                .disableAutocorrection(true)
+                                .onChange(of: viewModel.guessText) { _, _ in
+                                    viewModel.filterCountries()
+                                    withAnimation {
+                                        proxy.scrollTo("inputArea", anchor: .top)
+                                    }
                                 }
+                            
+                            if !viewModel.suggestions.isEmpty {
+                                predictionList
                             }
-                        
-                        if !viewModel.suggestions.isEmpty {
-                            predictionList
                         }
-                    }
-                    .id("inputArea")
-                    .zIndex(1)
+                        .id("inputArea")
+                        .zIndex(1)
 
-                    guessButton
-                    distanceResult
-                    GuessListView(guesses: viewModel.guesses)
-                    
-                    Spacer(minLength: 100)
+                        guessButton
+                        distanceResult
+                        GuessListView(guesses: viewModel.guesses)
+                        
+                        Spacer(minLength: 100)
+                    }
+                    .padding()
                 }
-                .padding()
             }
-        }
-        .navigationTitle("Single Play")
-        .dismissKeyboardOnTap()
-        .confirmQuitOnBack { viewModel.clearGameDefaults() }
-        .sheet(isPresented: $viewModel.won) {
-            WinSheetView { viewModel.won = false }.presentationDetents([.medium]).interactiveDismissDisabled()
-        }
-        .alert("Game Over", isPresented: $viewModel.isGameOver) {
-            Button("Try Again") { }
-        } message: {
-            Text("You ran out of guesses!")
+            .navigationTitle("Single Play")
+            .dismissKeyboardOnTap()
+            .disabled(viewModel.isLoading)
+            .blur(radius: viewModel.isLoading ? 2 : 0)
+            .confirmQuitOnBack { viewModel.clearGameDefaults() }
+            .sheet(isPresented: $viewModel.won) {
+                WinSheetView { viewModel.won = false }.presentationDetents([.medium]).interactiveDismissDisabled()
+            }
+            .alert("Game Over", isPresented: $viewModel.isGameOver) {
+                Button("Try Again") { }
+            } message: {
+                Text("You ran out of guesses!")
+            }
+            
+            LoadingOverlay(isShowing: viewModel.isLoading, message: "Processing...")
         }
     }
 
