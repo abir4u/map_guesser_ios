@@ -25,12 +25,12 @@ struct HomeView: View {
                         viewModel.handleButtonTap(mode: .play)
                     }
                     
-                    MenuButton(title: "Play with Friends", color: .green) {
-                        viewModel.handleButtonTap(mode: .friends)
-                    }
-                    
-                    MenuButton(title: "Play Online", color: .orange) {
-                        viewModel.handleButtonTap(mode: .online)
+//                    MenuButton(title: "Play with Friends", color: .green) {
+//                        viewModel.handleButtonTap(mode: .friends)
+//                    }
+//                    
+//                    MenuButton(title: "Play Online", color: .orange) {
+//                        viewModel.handleButtonTap(mode: .online)
                     }
 
                     if let error = viewModel.errorMessage {
