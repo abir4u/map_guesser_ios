@@ -110,10 +110,13 @@ class SinglePlayViewModel: ObservableObject {
     }
 
     func submitGuess() {
-        let currentGuess = guessText.trimmingCharacters(in: .whitespaces)
-        guard !currentGuess.isEmpty else { return }
+        let usersResponse = guessText.trimmingCharacters(in: .whitespaces)
+        guard !usersResponse.isEmpty else { return }
+        let currentGuess = identifyCountry(named: usersResponse)
+        
         let targetCountry = defaults.string(forKey: "correctCountryName") ?? ""
         
+        // TODO: Must move this if block to backend
         if currentGuess.lowercased() == targetCountry.lowercased() {
             won = true
             resetGame()
@@ -137,7 +140,7 @@ class SinglePlayViewModel: ObservableObject {
                 UserDefaults.standard.set(guessesLeft, forKey: "guessesLeft")
                 let newGuess = Guess(
                     num: guessNumber,
-                    name: currentGuess,
+                    name: usersResponse,
                     dist: self.lastDistance,
                     direction: directionRotation)
                 self.guesses.append(newGuess)
@@ -161,6 +164,12 @@ class SinglePlayViewModel: ObservableObject {
         suggestions = allCountries.filter {
             $0.lowercased().contains(guessText.lowercased()) && $0.lowercased() != guessText.lowercased()
         }
+    }
+    
+    private func identifyCountry(named name: String) -> String {
+        let match = allCountries.first { $0.caseInsensitiveCompare(name) == .orderedSame }
+        
+        return match ?? "Invalid country name"
     }
 
     var directionRotation: Double {
