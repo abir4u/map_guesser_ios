@@ -12,7 +12,7 @@
 | 4 | Backend server is small | Low | Backlog |
 | 5 | ~~Better loading indicators are needed for better player experience~~ | Medium | Done |
 | 6 | ~~Refactor from completion handlers to async/await for better app performance~~ | Medium | Done |
-| 7 | Notify backend of win scenario | Medium | Backlog |
+| 7 | ~~Notify backend of win scenario~~ | Medium | Done |
 | 8 | Implement record keeping feature for players | Low | Backlog |
 | 9 | ~~Clues should not be shown for guesses that are not valid country names and an error message should clearly notify that to the player~~ | HIGH | Done |
 | 10 | ~~Must store locally the number of guesses left for a game in progress~~ | HIGH | Done |
