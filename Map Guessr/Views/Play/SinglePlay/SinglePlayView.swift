@@ -60,9 +60,13 @@ struct SinglePlayView: View {
             } message: {
                 Text("You ran out of guesses!")
             }
-            
-            LoadingOverlay(isShowing: viewModel.isLoading, message: "Processing...")
+            if viewModel.isLoading {
+                LoadingOverlay(isShowing: viewModel.isLoading, message: "Processing...")
+                    .transition(.opacity) // Smooth transition prevents "snapping"
+                    .zIndex(2) // Ensure it stays on top of everything
+            }
         }
+        .animation(.default, value: viewModel.isLoading)
     }
 
     // --- Sub-views to keep code clean ---
@@ -108,7 +112,7 @@ struct SinglePlayView: View {
     private var guessButton: some View {
         Button(action: {
             isTextFieldFocused = false
-            viewModel.submitGuess()
+            Task { await viewModel.submitGuess() }
         }) {
             Text("GUESS").bold().frame(maxWidth: .infinity).padding()
                 .background(viewModel.guessText.isEmpty ? Color.gray : Color.blue)

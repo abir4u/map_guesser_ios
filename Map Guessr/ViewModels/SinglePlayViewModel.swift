@@ -109,49 +109,54 @@ class SinglePlayViewModel: ObservableObject {
         }
     }
 
-    func submitGuess() {
+    func submitGuess() async {
         let usersResponse = guessText.trimmingCharacters(in: .whitespaces)
         guard !usersResponse.isEmpty else { return }
         let currentGuess = identifyCountry(named: usersResponse)
         
-        let targetCountry = defaults.string(forKey: "correctCountryName") ?? ""
+        isLoading = true
+        defer {
+            isLoading = false
+            guessText = ""
+            suggestions = []
+        }
         
-        // TODO: Must move this if block to backend
-        if currentGuess.lowercased() == targetCountry.lowercased() {
-            won = true
-            resetGame()
+        if currentGuess == "Invalid country name" {
+            self.lastDistance = "Invalid country"
+            self.lastDirection = ""
         } else {
-            isLoading = true
-            Task {
-                defer {
-                    Task { @MainActor in self.isLoading = false }
-                }
-                if let res = await gameService.getClue(origin: currentGuess, destination: targetCountry) {
+            let targetCountry = defaults.string(forKey: "correctCountryName") ?? ""
+            
+            if let res = await gameService.getClue(origin: currentGuess, destination: targetCountry) {
+                if (Int(res.distance_km) == 0 && Int(res.bearing_degrees) == 0) {
+                    won = true
+                    resetGame()
+                    return
+                } else {
                     self.lastDistance = "\(Int(res.distance_km)) km"
                     self.lastDirection = res.direction
-                } else {
-                    self.lastDistance = "Unknown distance"
-                    self.lastDirection = ""
                 }
-                
-                var guessesLeft = UserDefaults.standard.integer(forKey: "guessesLeft")
-                let guessNumber = "\(6 - guessesLeft)/5"
-                guessesLeft = guessesLeft - 1
-                UserDefaults.standard.set(guessesLeft, forKey: "guessesLeft")
-                let newGuess = Guess(
-                    num: guessNumber,
-                    name: usersResponse,
-                    dist: self.lastDistance,
-                    direction: directionRotation)
-                self.guesses.append(newGuess)
-                if guessesLeft <= 0 {
-                    self.isGameOver = true
-                    resetGame()
-                }
+            } else {
+                self.lastDistance = "Unknown distance"
+                self.lastDirection = ""
             }
         }
-        guessText = ""
-        suggestions = []
+        
+        var guessesLeft = UserDefaults.standard.integer(forKey: "guessesLeft")
+        let guessNumber = "\(6 - guessesLeft)/5"
+        guessesLeft = guessesLeft - 1
+        UserDefaults.standard.set(guessesLeft, forKey: "guessesLeft")
+        let newGuess = Guess(
+            num: guessNumber,
+            name: usersResponse,
+            dist: self.lastDistance,
+            direction: directionRotation)
+        self.guesses.append(newGuess)
+
+        if guessesLeft <= 0 {
+            self.isGameOver = true
+            resetGame()
+        }
     }
 
     func clearGameDefaults() {

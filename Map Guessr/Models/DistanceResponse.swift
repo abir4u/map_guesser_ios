@@ -8,4 +8,5 @@
 nonisolated struct DistanceResponse: Decodable, Sendable {
     let distance_km: Double
     let direction: String
+    let bearing_degrees: Double
 }
