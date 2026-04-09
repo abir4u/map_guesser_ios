@@ -7,7 +7,14 @@
 
 import SwiftUI
 
+enum Level: Hashable {
+    case Beginner
+    case Pro
+    case None
+}
+
 struct SinglePlayView: View {
+    let level: Level
     @StateObject var viewModel = SinglePlayViewModel()
     @FocusState private var isTextFieldFocused: Bool
 

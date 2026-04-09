@@ -9,10 +9,12 @@ import SwiftUI
 
 struct HomeView: View {
     @StateObject private var viewModel = HomeViewModel()
+    @State private var showingLevelSheet = false
     @State private var showingLogoutAlert = false
     
     var body: some View {
         NavigationStack(path: $viewModel.path) {
+
             ZStack {
                 VStack(spacing: 25) {
                     Text("Map Guesser")
@@ -22,7 +24,7 @@ struct HomeView: View {
                     Spacer()
 
                     MenuButton(title: "Play", color: .blue) {
-                        viewModel.handleButtonTap(mode: .play)
+                        showingLevelSheet.toggle()
                     }
                     
 //                    MenuButton(title: "Play with Friends", color: .green) {
@@ -58,8 +60,8 @@ struct HomeView: View {
             .navigationBarTitleDisplayMode(.inline)
             .navigationDestination(for: GameMode.self) { mode in
                 switch mode {
-                case .play:
-                    SinglePlayView()
+                case .play(let level):
+                        SinglePlayView(level: level)
                 case .friends:
                     Text("Friends Lobby")
                 case .online:
@@ -82,6 +84,12 @@ struct HomeView: View {
                     viewModel.logout()
                 }
                 Button("Cancel", role: .cancel) { }
+            }
+            .sheet(isPresented: $showingLevelSheet) {
+                LevelSheetView { selectedLevel in
+                    showingLevelSheet = false
+                    viewModel.handleButtonTap(mode: .play(selectedLevel))
+                }
             }
         }
     }

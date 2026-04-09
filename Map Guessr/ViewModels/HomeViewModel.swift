@@ -16,6 +16,8 @@ class HomeViewModel: ObservableObject {
     @Published var isLoading = false
     
     @Published var authService = AuthService()
+    
+    private var pendingMode: GameMode?
 
     var isLoggedIn: Bool {
         authService.isLoggedIn
@@ -25,6 +27,7 @@ class HomeViewModel: ObservableObject {
         if authService.isLoggedIn {
             path.append(mode)
         } else {
+            pendingMode = mode
             Task {
                 await loginAndNavigate(to: mode)
             }
@@ -38,6 +41,7 @@ class HomeViewModel: ObservableObject {
         do {
             try await authService.handleGoogleLogin()
             path.append(mode)
+            pendingMode = nil
         } catch {
             errorMessage = error.localizedDescription
         }

@@ -8,5 +8,7 @@
 import Foundation
 
 enum GameMode: Hashable {
-    case play, friends, online
+    case play(Level)
+    case friends
+    case online
 }
