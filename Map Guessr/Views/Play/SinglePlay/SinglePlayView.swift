@@ -79,9 +79,28 @@ struct SinglePlayView: View {
     // --- Sub-views to keep code clean ---
     
     private var headerSection: some View {
-        Text("\(UserDefaults.standard.integer(forKey: "guessesLeft"))/5 Guesses Left")
-            .font(.title3.bold())
-            .foregroundColor(UserDefaults.standard.integer(forKey: "guessesLeft") < 2 ? .red : .primary)
+        HStack {
+            let guessesLeft = UserDefaults.standard.integer(forKey: "guessesLeft")
+            
+            HStack(spacing: 12) {
+                Image(systemName: "mappin.and.ellipse")
+                Text("\(guessesLeft) GUESSES LEFT")
+                    .font(.system(.subheadline, design: .monospaced).bold())
+            }
+            .padding(.vertical, 8)
+            .padding(.horizontal, 16)
+            .background(guessesLeft < 2 ? Color.red : Color.blue)
+            .foregroundColor(.white)
+            .clipShape(Capsule())
+            
+            Spacer()
+            
+            Text(String(describing: level).uppercased())
+                .font(.caption2.bold())
+                .padding(6)
+                .background(Color.secondary.opacity(0.2))
+                .cornerRadius(4)
+        }
     }
 
     private var mapSection: some View {
