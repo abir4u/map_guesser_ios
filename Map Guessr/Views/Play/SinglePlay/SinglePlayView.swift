@@ -60,10 +60,21 @@ struct SinglePlayView: View {
             .blur(radius: viewModel.isLoading ? 2 : 0)
             .confirmQuitOnBack { viewModel.clearGameDefaults() }
             .sheet(isPresented: $viewModel.won) {
-                WinSheetView { viewModel.won = false }.presentationDetents([.medium]).interactiveDismissDisabled()
+                WinSheetView {
+                    Task {
+                        await viewModel.resetGame()
+                        viewModel.won = false
+                    }
+                }
+                .presentationDetents([.medium])
+                .interactiveDismissDisabled()
             }
             .alert("Game Over", isPresented: $viewModel.isGameOver) {
-                Button("Try Again") { }
+                Button("Try Again") {
+                    Task {
+                        await viewModel.resetGame()
+                    }
+                }
             } message: {
                 Text("You ran out of guesses!")
             }

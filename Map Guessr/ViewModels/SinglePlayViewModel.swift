@@ -86,26 +86,27 @@ class SinglePlayViewModel: ObservableObject {
         self.isLoading = false
     }
     
-    func resetGame() {
-        Task {
-            self.lastDistance = ""
-            self.lastDirection = ""
-            self.guessText = ""
-            self.mapImage = nil
-            self.guesses = []
-            
-            defaults.set(5, forKey: "guessesLeft")
-            defaults.removeObject(forKey: "correctCountryName")
-            
-            if !allCountries.isEmpty {
-                await handleFailingOutlineApi {
-                    let country = pickACountry()
-                    defaults.set(country, forKey: "correctCountryName")
-                    await selectTargetAndFetchMap()
-                }
-            } else {
-                await setupGame()
+    func resetGame() async {
+        self.isLoading = true
+        defer { self.isLoading = false }
+        
+        self.lastDistance = ""
+        self.lastDirection = ""
+        self.guessText = ""
+        self.mapImage = nil
+        self.guesses = []
+        
+        defaults.set(5, forKey: "guessesLeft")
+        defaults.removeObject(forKey: "correctCountryName")
+        
+        if !allCountries.isEmpty {
+            await handleFailingOutlineApi {
+                let country = pickACountry()
+                defaults.set(country, forKey: "correctCountryName")
+                await selectTargetAndFetchMap()
             }
+        } else {
+            await setupGame()
         }
     }
 
@@ -130,7 +131,7 @@ class SinglePlayViewModel: ObservableObject {
             if let res = await gameService.getClue(origin: currentGuess, destination: targetCountry) {
                 if (Int(res.distance_km) == 0 && Int(res.bearing_degrees) == 0) {
                     won = true
-                    resetGame()
+//                    resetGame()
                     return
                 } else {
                     self.lastDistance = "\(Int(res.distance_km)) km"
@@ -155,7 +156,7 @@ class SinglePlayViewModel: ObservableObject {
 
         if guessesLeft <= 0 {
             self.isGameOver = true
-            resetGame()
+//            resetGame()
         }
     }
 
