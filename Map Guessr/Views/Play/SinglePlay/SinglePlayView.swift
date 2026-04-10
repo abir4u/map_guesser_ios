@@ -15,8 +15,19 @@ enum Level: Hashable {
 
 struct SinglePlayView: View {
     let level: Level
-    @StateObject var viewModel = SinglePlayViewModel()
+    @StateObject var viewModel: SinglePlayViewModel
     @FocusState private var isTextFieldFocused: Bool
+    
+    init(level: Level) {
+        self.level = level
+        _viewModel = StateObject(wrappedValue: SinglePlayViewModel(level: level))
+    }
+    
+    var formattedTime: String {
+        let minutes = max(0, viewModel.timeElapsed) / 60
+        let seconds = max(0, viewModel.timeElapsed) % 60
+        return String(format: "%02d:%02d", minutes, seconds)
+    }
 
     var body: some View {
         ZStack {
@@ -54,7 +65,17 @@ struct SinglePlayView: View {
                     .padding()
                 }
             }
-            .navigationTitle("Single Play")
+            .toolbar {
+                if level == .Pro {
+                    ToolbarItem(placement: .principal) {
+                        Text(formattedTime)
+                            .font(.system(.headline, design: .monospaced))
+                            .fontWeight(.bold)
+                    }
+                }
+            }
+            .navigationTitle(level == .Pro ? "" : "Solo Play")
+            .navigationBarTitleDisplayMode(.inline)
             .dismissKeyboardOnTap()
             .disabled(viewModel.isLoading)
             .blur(radius: viewModel.isLoading ? 2 : 0)

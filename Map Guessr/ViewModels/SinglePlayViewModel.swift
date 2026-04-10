@@ -8,6 +8,8 @@
 import SwiftUI
 internal import Combine
 
+let PRO_TIME_LIMIT = 30
+
 @MainActor
 class SinglePlayViewModel: ObservableObject {
     @Published var mapImage: Image?
@@ -21,12 +23,16 @@ class SinglePlayViewModel: ObservableObject {
     @Published var errorMessage: String?
     @Published var isGameOver = false
     @Published var won = false
+    @Published var timeElapsed: Int = PRO_TIME_LIMIT
 
+    let level: Level
+    private var timer: Timer?
     private let gameService = CoreGameService()
     private var allCountries: [String] = []
     private let defaults = UserDefaults.standard
 
-    init() {
+    init(level: Level) {
+        self.level = level
         Task {
             await setupGame()
         }
@@ -84,6 +90,10 @@ class SinglePlayViewModel: ObservableObject {
             self.errorMessage = "Failed to load map outline."
         }
         self.isLoading = false
+        
+        if mapImage != nil {
+            startTimer()
+        }
     }
     
     func resetGame() async {
@@ -122,8 +132,8 @@ class SinglePlayViewModel: ObservableObject {
             suggestions = []
         }
         
-        if currentGuess == "Invalid country name" {
-            self.lastDistance = "Invalid country"
+        if currentGuess == "Invalid country name" || currentGuess == "Time up" {
+            self.lastDistance = currentGuess
             self.lastDirection = ""
         } else {
             let targetCountry = defaults.string(forKey: "correctCountryName") ?? ""
@@ -131,7 +141,6 @@ class SinglePlayViewModel: ObservableObject {
             if let res = await gameService.getClue(origin: currentGuess, destination: targetCountry) {
                 if (Int(res.distance_km) == 0 && Int(res.bearing_degrees) == 0) {
                     won = true
-//                    resetGame()
                     return
                 } else {
                     self.lastDistance = "\(Int(res.distance_km)) km"
@@ -156,7 +165,12 @@ class SinglePlayViewModel: ObservableObject {
 
         if guessesLeft <= 0 {
             self.isGameOver = true
-//            resetGame()
+        }
+        
+        if won || isGameOver {
+            stopTimer()
+        } else {
+            startTimer()
         }
     }
 
@@ -173,6 +187,7 @@ class SinglePlayViewModel: ObservableObject {
     }
     
     private func identifyCountry(named name: String) -> String {
+        if name == "Time up" { return "Time up" }
         let match = allCountries.first { $0.caseInsensitiveCompare(name) == .orderedSame }
         
         return match ?? "Invalid country name"
@@ -184,6 +199,37 @@ class SinglePlayViewModel: ObservableObject {
             "South": 180, "South-West": 225, "West": 270, "North-West": 315
         ]
         return mapping[lastDirection] ?? 0
+    }
+    
+    func startTimer() {
+        stopTimer()
+        guard level == .Pro else { return }
+        timeElapsed = PRO_TIME_LIMIT
+        
+        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
+            Task { @MainActor in
+                guard let self = self else { return }
+                
+                if self.won || self.isGameOver {
+                    self.stopTimer()
+                    return
+                }
+                
+                if self.timeElapsed > 0 {
+                    self.timeElapsed -= 1
+                } else {
+                    self.stopTimer()
+                    
+                    self.guessText = "Time up"
+                    await self.submitGuess()
+                }
+            }
+        }
+    }
+
+    func stopTimer() {
+        timer?.invalidate()
+        timer = nil
     }
     
     /*
