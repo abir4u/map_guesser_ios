@@ -6,9 +6,9 @@
 
 | Sl No | Description | Priority | Status |
 | ----- | ----------- | -------- | ------ |
-| 1 | Some country outlines have not been found yet | Medium | Backlog |
+| 1 | ~~Some country outlines have not been found yet~~ | Medium | Done |
 | 2 | ~~Country outline API 404 Failure should not cause a bad experience for the player~~ | HIGH | Done |
-| 3 | Country outline are of low quality | Medium | Backlog |
+| 3 | ~~Country outline are of low quality~~ | Medium | Done |
 | 4 | Backend server is small | Low | Backlog |
 | 5 | ~~Better loading indicators are needed for better player experience~~ | Medium | Done |
 | 6 | ~~Refactor from completion handlers to async/await for better app performance~~ | Medium | Done |
