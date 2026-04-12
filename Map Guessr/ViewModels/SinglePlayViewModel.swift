@@ -9,6 +9,7 @@ import SwiftUI
 internal import Combine
 
 let PRO_TIME_LIMIT = 30
+let GUESS_LIMIT = 5
 
 @MainActor
 class SinglePlayViewModel: ObservableObject {
@@ -17,12 +18,25 @@ class SinglePlayViewModel: ObservableObject {
     @Published var lastDistance: String = ""
     @Published var lastDirection: String = ""
     @Published var suggestions: [String] = []
+    @Published var guessesLeft: Int = GUESS_LIMIT {
+        didSet {
+            defaults.set(guessesLeft, forKey: "guessesLeft")
+        }
+    }
     @Published var guesses: [Guess] = []
     
     @Published var isLoading = false
     @Published var errorMessage: String?
-    @Published var isGameOver = false
-    @Published var won = false
+    @Published var isGameOver = false {
+        didSet {
+            defaults.set(isGameOver, forKey: "isGameOver")
+        }
+    }
+    @Published var won = false {
+        didSet {
+            defaults.set(won, forKey: "won")
+        }
+    }
     @Published var timeElapsed: Int = PRO_TIME_LIMIT
 
     let level: Level
@@ -30,6 +44,12 @@ class SinglePlayViewModel: ObservableObject {
     private let gameService = CoreGameService()
     private var allCountries: [String] = []
     private let defaults = UserDefaults.standard
+    
+    var formattedTime: String {
+        let minutes = max(0, timeElapsed) / 60
+        let seconds = max(0, timeElapsed) % 60
+        return String(format: "%02d:%02d", minutes, seconds)
+    }
 
     init(level: Level) {
         self.level = level
@@ -39,23 +59,30 @@ class SinglePlayViewModel: ObservableObject {
     }
 
     func setupGame() async {
+        self.isGameOver = defaults.bool(forKey: "isGameOver")
+        self.won = defaults.bool(forKey: "won")
+
+        if self.isGameOver || self.won {
+            await resetGame()
+            return
+        }
+        
         self.isLoading = true
         self.errorMessage = nil
         
         let savedCountry = defaults.string(forKey: "correctCountryName") ?? ""
         let savedList = defaults.stringArray(forKey: "storedCountryList") ?? []
-        let guessesLeft = defaults.integer(forKey: "guessesLeft")
+        let storedGuesses = defaults.integer(forKey: "guessesLeft")
+        
+
+        self.guessesLeft = (storedGuesses == 0) ? GUESS_LIMIT : storedGuesses
 
         if !savedCountry.isEmpty && !savedList.isEmpty {
             self.allCountries = savedList
             await selectTargetAndFetchMap()
             return
         }
-        
-        if guessesLeft == 0 {
-            defaults.set(5, forKey: "guessesLeft")
-        }
-
+                
         let names = await gameService.getCountryNames()
         
         if names.isEmpty {
@@ -104,9 +131,11 @@ class SinglePlayViewModel: ObservableObject {
         self.lastDirection = ""
         self.guessText = ""
         self.mapImage = nil
+        self.guessesLeft = GUESS_LIMIT
         self.guesses = []
+        self.isGameOver = false
+        self.won = false
         
-        defaults.set(5, forKey: "guessesLeft")
         defaults.removeObject(forKey: "correctCountryName")
         
         if !allCountries.isEmpty {
@@ -152,10 +181,9 @@ class SinglePlayViewModel: ObservableObject {
             }
         }
         
-        var guessesLeft = UserDefaults.standard.integer(forKey: "guessesLeft")
-        let guessNumber = "\(6 - guessesLeft)/5"
-        guessesLeft = guessesLeft - 1
-        UserDefaults.standard.set(guessesLeft, forKey: "guessesLeft")
+        let guessNumber = "\(6 - self.guessesLeft)/5"
+        self.guessesLeft = self.guessesLeft - 1
+        
         let newGuess = Guess(
             num: guessNumber,
             name: usersResponse,
@@ -163,7 +191,7 @@ class SinglePlayViewModel: ObservableObject {
             direction: directionRotation)
         self.guesses.append(newGuess)
 
-        if guessesLeft <= 0 {
+        if self.guessesLeft <= 0 {
             self.isGameOver = true
         }
         
@@ -175,7 +203,7 @@ class SinglePlayViewModel: ObservableObject {
     }
 
     func clearGameDefaults() {
-        defaults.set(5, forKey: "guessesLeft")
+        defaults.set(GUESS_LIMIT, forKey: "guessesLeft")
         defaults.removeObject(forKey: "storedCountryList")
         defaults.removeObject(forKey: "correctCountryName")
     }
