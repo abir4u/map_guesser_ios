@@ -20,5 +20,6 @@
 | 12 | Some tiny island countries are not displayed properly during game play | Medium | In Progress |
 | 13 | ~~Once the full name of a country is written in text field, it disappears from prediction list~~ | Low | Done |
 | 14 | ~~Some country names are not identified correctly in distance API. Need to check each country~~ | HIGH | Done |
+| 15 | If a User wins or loses a game and then instead of replaying, closes the app and reopens it, then on navigating to Play, they will get the same map as the last one which they already played. | Low | Backlog |
 
 
