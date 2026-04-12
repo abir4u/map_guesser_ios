@@ -18,6 +18,6 @@
 | 10 | ~~Must store locally the number of guesses left for a game in progress~~ | HIGH | Done |
 | 11 | ~~Country Outline API gets triggered twice before and after click of Try again after defeat~~ | Low | Done |
 | 12 | Some tiny island countries are not displayed properly during game play | HIGH | In Progress |
-| 13 | Once the full name of a country is written in text field, it disappears from prediction list | Low | Backlog |
+| 13 | ~~Once the full name of a country is written in text field, it disappears from prediction list~~ | Low | Done |
 
 
