@@ -182,7 +182,7 @@ class SinglePlayViewModel: ObservableObject {
 
     func filterCountries() {
         suggestions = allCountries.filter {
-            $0.lowercased().contains(guessText.lowercased()) && $0.lowercased() != guessText.lowercased()
+            $0.lowercased().contains(guessText.lowercased())
         }
     }
     
