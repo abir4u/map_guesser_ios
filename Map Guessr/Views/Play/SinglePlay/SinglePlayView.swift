@@ -85,7 +85,7 @@ struct SinglePlayView: View {
                 .interactiveDismissDisabled()
             }
             .alert("Game Over", isPresented: $viewModel.isGameOver) {
-                Button("Try Again") {
+                Button("Try A New One") {
                     Task {
                         await viewModel.resetGame()
                     }
