@@ -10,6 +10,7 @@ internal import Combine
 
 let PRO_TIME_LIMIT = 30
 let GUESS_LIMIT = 5
+let DEFAULT_COUNTRY = "New Zealand"
 
 @MainActor
 class SinglePlayViewModel: ObservableObject {
@@ -18,32 +19,19 @@ class SinglePlayViewModel: ObservableObject {
     @Published var lastDistance: String = ""
     @Published var lastDirection: String = ""
     @Published var suggestions: [String] = []
-    @Published var guessesLeft: Int = GUESS_LIMIT {
-        didSet {
-            defaults.set(guessesLeft, forKey: "guessesLeft")
-        }
-    }
+    @Published var guessesLeft: Int = GUESS_LIMIT
     @Published var guesses: [Guess] = []
     
     @Published var isLoading = false
     @Published var errorMessage: String?
-    @Published var isGameOver = false {
-        didSet {
-            defaults.set(isGameOver, forKey: "isGameOver")
-        }
-    }
-    @Published var won = false {
-        didSet {
-            defaults.set(won, forKey: "won")
-        }
-    }
+    @Published var isGameOver = false
+    @Published var won = false
     @Published var timeElapsed: Int = PRO_TIME_LIMIT
 
     let level: Level
     private var timer: Timer?
+    private let repo = GameRepository()
     private let gameService = CoreGameService()
-    private var allCountries: [String] = []
-    private let defaults = UserDefaults.standard
     
     var formattedTime: String {
         let minutes = max(0, timeElapsed) / 60
@@ -53,82 +41,69 @@ class SinglePlayViewModel: ObservableObject {
 
     init(level: Level) {
         self.level = level
-        Task {
-            await setupGame()
-        }
+        self.isGameOver = repo.isGameOver
+        self.won = repo.won
+        self.guessesLeft = repo.guessesLeft
+        Task { await setupGame() }
     }
 
-    func setupGame() async {
-        self.isGameOver = defaults.bool(forKey: "isGameOver")
-        self.won = defaults.bool(forKey: "won")
-                
-        let savedCountry = defaults.string(forKey: "correctCountryName") ?? ""
-        let savedList = defaults.stringArray(forKey: "storedCountryList") ?? []
-        let storedGuesses = defaults.integer(forKey: "guessesLeft")
-        
-        if isGameOver || won {
-            await resetGame()
-            return
+    func setupGame() async {                
+        if repo.isGameOver || repo.won {
+            resetGame()
         }
         
         self.isLoading = true
+        defer { self.isLoading = false }
+        
         self.errorMessage = nil
 
-        self.guessesLeft = (storedGuesses == 0) ? GUESS_LIMIT : storedGuesses
+        self.guessesLeft = (repo.guessesLeft == 0) ? GUESS_LIMIT : repo.guessesLeft
 
-        if !savedCountry.isEmpty && !savedList.isEmpty {
-            self.allCountries = savedList
+        if !repo.correctCountry.isEmpty && !repo.storedCountryList.isEmpty {
             await selectTargetAndFetchMap()
             return
         }
-                
-        let names = await gameService.getCountryNames()
         
-        if names.isEmpty {
-            self.isLoading = false
-            self.errorMessage = "Could not load country list. Check server connection."
-            return
-        }
-
-        self.allCountries = names
-        defaults.set(names, forKey: "storedCountryList")
-        
-        await handleFailingOutlineApi {
-            let newCountry = self.pickACountry()
-            defaults.set(newCountry, forKey: "correctCountryName")
+        if repo.storedCountryList.isEmpty {
+            let names = await gameService.getCountryNames()
             
-            await selectTargetAndFetchMap()
+            if names.isEmpty {
+                self.isLoading = false
+                self.errorMessage = "Could not load country list. Check server connection."
+                return
+            }
+
+            repo.storedCountryList = names
         }
         
-        self.isLoading = false
+        repo.correctCountry = self.pickACountry()
+        await selectTargetAndFetchMap()
     }
     
     private func pickACountry() -> String {
-        allCountries.randomElement() ?? "New Zealand"
+        repo.storedCountryList.randomElement() ?? DEFAULT_COUNTRY
     }
 
     private func selectTargetAndFetchMap() async {
-        self.isLoading = true
-        let targetCountry = defaults.string(forKey: "correctCountryName") ?? "New Zealand"
+        let targetCountry = repo.correctCountry == "" ? DEFAULT_COUNTRY : repo.correctCountry
         
-        if let image = await gameService.getCountryOutline(countryName: targetCountry) {
-            self.mapImage = image
-            self.errorMessage = nil
-        } else {
-            self.errorMessage = "Failed to load map outline."
+        await handleFailingOutlineApi {
+            if let image = await gameService.getCountryOutline(countryName: targetCountry) {
+                self.mapImage = image
+                self.errorMessage = nil
+            } else {
+                self.errorMessage = "Failed to load map outline."
+                return
+            }
         }
-        self.isLoading = false
-        
+                
         if mapImage != nil {
             startTimer()
         }
     }
     
-    func resetGame() async {
-        self.isLoading = true
-        defer { self.isLoading = false }
-        
-        clearGameDefaults()
+    func resetGame() {
+        repo.clearGame()
         
         self.lastDistance = ""
         self.lastDirection = ""
@@ -138,16 +113,6 @@ class SinglePlayViewModel: ObservableObject {
         self.guesses = []
         self.isGameOver = false
         self.won = false
-                
-        if !allCountries.isEmpty {
-            await handleFailingOutlineApi {
-                let country = pickACountry()
-                defaults.set(country, forKey: "correctCountryName")
-                await selectTargetAndFetchMap()
-            }
-        } else {
-            await setupGame()
-        }
     }
 
     func submitGuess() async {
@@ -158,19 +123,18 @@ class SinglePlayViewModel: ObservableObject {
         isLoading = true
         defer {
             isLoading = false
-            guessText = ""
-            suggestions = []
+            self.guessText = ""
+            self.suggestions = []
         }
         
         if currentGuess == "Invalid country name" || currentGuess == "Time up" {
             self.lastDistance = currentGuess
             self.lastDirection = ""
         } else {
-            let targetCountry = defaults.string(forKey: "correctCountryName") ?? ""
-            
-            if let res = await gameService.getClue(origin: currentGuess, destination: targetCountry) {
+            if let res = await gameService.getClue(origin: currentGuess, destination: repo.correctCountry) {
                 if (Int(res.distance_km) == 0 && Int(res.bearing_degrees) == 0) {
                     won = true
+                    repo.won = true
                     return
                 } else {
                     self.lastDistance = "\(Int(res.distance_km)) km"
@@ -182,44 +146,39 @@ class SinglePlayViewModel: ObservableObject {
             }
         }
         
-        let guessNumber = "\(6 - self.guessesLeft)/5"
-        self.guessesLeft = self.guessesLeft - 1
+        let guessNumber = "\(6 - repo.guessesLeft)/5"
+        repo.guessesLeft = repo.guessesLeft - 1
+        self.guessesLeft = repo.guessesLeft
         
         let newGuess = Guess(
             num: guessNumber,
             name: usersResponse,
             dist: self.lastDistance,
-            direction: directionRotation)
+            direction: directionRotation
+        )
         self.guesses.append(newGuess)
 
-        if self.guessesLeft <= 0 {
+        if repo.guessesLeft <= 0 {
             self.isGameOver = true
+            repo.isGameOver = true
         }
         
-        if won || isGameOver {
+        if repo.won || repo.isGameOver {
             stopTimer()
         } else {
             startTimer()
         }
     }
 
-    func clearGameDefaults() {
-        defaults.set(GUESS_LIMIT, forKey: "guessesLeft")
-        defaults.removeObject(forKey: "storedCountryList")
-        defaults.removeObject(forKey: "correctCountryName")
-        defaults.removeObject(forKey: "won")
-        defaults.removeObject(forKey: "isGameOver")
-    }
-
     func filterCountries() {
-        suggestions = allCountries.filter {
+        suggestions = repo.storedCountryList.filter {
             $0.lowercased().contains(guessText.lowercased())
         }
     }
     
     private func identifyCountry(named name: String) -> String {
         if name == "Time up" { return "Time up" }
-        let match = allCountries.first { $0.caseInsensitiveCompare(name) == .orderedSame }
+        let match = repo.storedCountryList.first { $0.caseInsensitiveCompare(name) == .orderedSame }
         
         return match ?? "Invalid country name"
     }

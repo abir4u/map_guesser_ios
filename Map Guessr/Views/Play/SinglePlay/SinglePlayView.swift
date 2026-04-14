@@ -73,11 +73,11 @@ struct SinglePlayView: View {
             .dismissKeyboardOnTap()
             .disabled(viewModel.isLoading)
             .blur(radius: viewModel.isLoading ? 2 : 0)
-            .confirmQuitOnBack { viewModel.clearGameDefaults() }
+            .confirmQuitOnBack { viewModel.resetGame() }
             .sheet(isPresented: $viewModel.won) {
                 WinSheetView {
                     Task {
-                        await viewModel.resetGame()
+                        await viewModel.setupGame()
                         viewModel.won = false
                     }
                 }
@@ -87,7 +87,7 @@ struct SinglePlayView: View {
             .alert("Game Over", isPresented: $viewModel.isGameOver) {
                 Button("Try A New One") {
                     Task {
-                        await viewModel.resetGame()
+                        await viewModel.setupGame()
                     }
                 }
             } message: {
