@@ -61,19 +61,18 @@ class SinglePlayViewModel: ObservableObject {
     func setupGame() async {
         self.isGameOver = defaults.bool(forKey: "isGameOver")
         self.won = defaults.bool(forKey: "won")
-
-        if self.isGameOver || self.won {
+                
+        let savedCountry = defaults.string(forKey: "correctCountryName") ?? ""
+        let savedList = defaults.stringArray(forKey: "storedCountryList") ?? []
+        let storedGuesses = defaults.integer(forKey: "guessesLeft")
+        
+        if isGameOver || won {
             await resetGame()
             return
         }
         
         self.isLoading = true
         self.errorMessage = nil
-        
-        let savedCountry = defaults.string(forKey: "correctCountryName") ?? ""
-        let savedList = defaults.stringArray(forKey: "storedCountryList") ?? []
-        let storedGuesses = defaults.integer(forKey: "guessesLeft")
-        
 
         self.guessesLeft = (storedGuesses == 0) ? GUESS_LIMIT : storedGuesses
 
@@ -100,6 +99,8 @@ class SinglePlayViewModel: ObservableObject {
             
             await selectTargetAndFetchMap()
         }
+        
+        self.isLoading = false
     }
     
     private func pickACountry() -> String {
@@ -127,6 +128,8 @@ class SinglePlayViewModel: ObservableObject {
         self.isLoading = true
         defer { self.isLoading = false }
         
+        clearGameDefaults()
+        
         self.lastDistance = ""
         self.lastDirection = ""
         self.guessText = ""
@@ -135,9 +138,7 @@ class SinglePlayViewModel: ObservableObject {
         self.guesses = []
         self.isGameOver = false
         self.won = false
-        
-        defaults.removeObject(forKey: "correctCountryName")
-        
+                
         if !allCountries.isEmpty {
             await handleFailingOutlineApi {
                 let country = pickACountry()
@@ -206,6 +207,8 @@ class SinglePlayViewModel: ObservableObject {
         defaults.set(GUESS_LIMIT, forKey: "guessesLeft")
         defaults.removeObject(forKey: "storedCountryList")
         defaults.removeObject(forKey: "correctCountryName")
+        defaults.removeObject(forKey: "won")
+        defaults.removeObject(forKey: "isGameOver")
     }
 
     func filterCountries() {
