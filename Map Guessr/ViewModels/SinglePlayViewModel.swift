@@ -29,7 +29,8 @@ class SinglePlayViewModel: ObservableObject {
     @Published var timeElapsed: Int = PRO_TIME_LIMIT
 
     let level: Level
-    private var timer: Timer?
+    private var timerCancellable: AnyCancellable?
+    private let timerProvider: TimerProvider
     private let repo = GameRepository()
     private let gameService = CoreGameService()
     
@@ -39,14 +40,15 @@ class SinglePlayViewModel: ObservableObject {
         return String(format: "%02d:%02d", minutes, seconds)
     }
 
-    init(level: Level) {
+    init(level: Level, timerProvider: TimerProvider? = nil) {
         self.level = level
+        self.timerProvider = timerProvider ?? GameTimerProvider()
         self.isGameOver = repo.isGameOver
         self.won = repo.won
         self.guessesLeft = repo.guessesLeft
         Task { await setupGame() }
     }
-
+    
     func setupGame() async {                
         if repo.isGameOver || repo.won {
             resetGame()
@@ -113,6 +115,7 @@ class SinglePlayViewModel: ObservableObject {
         self.guesses = []
         self.isGameOver = false
         self.won = false
+        self.timeElapsed = PRO_TIME_LIMIT
     }
 
     func submitGuess() async {
@@ -120,6 +123,7 @@ class SinglePlayViewModel: ObservableObject {
         guard !usersResponse.isEmpty else { return }
         let currentGuess = identifyCountry(named: usersResponse)
         
+        stopTimer()
         isLoading = true
         defer {
             isLoading = false
@@ -163,9 +167,7 @@ class SinglePlayViewModel: ObservableObject {
             repo.isGameOver = true
         }
         
-        if repo.won || repo.isGameOver {
-            stopTimer()
-        } else {
+        if !(repo.won || repo.isGameOver) {
             startTimer()
         }
     }
@@ -193,33 +195,23 @@ class SinglePlayViewModel: ObservableObject {
     
     func startTimer() {
         stopTimer()
-        guard level == .Pro else { return }
-        timeElapsed = PRO_TIME_LIMIT
+        guard level == .Pro, !isGameOver, !won else { return }
         
-        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
-            Task { @MainActor in
-                guard let self = self else { return }
-                
-                if self.won || self.isGameOver {
-                    self.stopTimer()
-                    return
-                }
-                
-                if self.timeElapsed > 0 {
-                    self.timeElapsed -= 1
-                } else {
-                    self.stopTimer()
-                    
-                    self.guessText = "Time up"
-                    await self.submitGuess()
-                }
-            }
-        }
+        timerCancellable = timerProvider.countdown(from: PRO_TIME_LIMIT)
+            .sink(receiveCompletion: { [weak self] _ in
+                Task { await self?.handleTimeout() }
+            }, receiveValue: { [weak self] remaining in
+                self?.timeElapsed = remaining
+            })
     }
 
     func stopTimer() {
-        timer?.invalidate()
-        timer = nil
+        timerCancellable = nil
+    }
+    
+    private func handleTimeout() async {
+        self.guessText = "Time up"
+        await self.submitGuess()
     }
     
     /*

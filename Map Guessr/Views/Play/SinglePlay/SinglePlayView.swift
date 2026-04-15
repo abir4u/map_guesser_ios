@@ -12,6 +12,7 @@ struct SinglePlayView: View {
     @StateObject var viewModel: SinglePlayViewModel
     @FocusState private var isTextFieldFocused: Bool
     
+    @MainActor
     init(level: Level) {
         self.level = level
         _viewModel = StateObject(wrappedValue: SinglePlayViewModel(level: level))
