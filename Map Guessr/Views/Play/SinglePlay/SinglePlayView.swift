@@ -76,7 +76,7 @@ struct SinglePlayView: View {
             .blur(radius: viewModel.isLoading ? 2 : 0)
             .confirmQuitOnBack { viewModel.resetGame() }
             .sheet(isPresented: $viewModel.won) {
-                WinSheetView {
+                WinSheetView(correctCountry: viewModel.getCorrectCountry()) {
                     Task {
                         await viewModel.setupGame()
                         viewModel.won = false
