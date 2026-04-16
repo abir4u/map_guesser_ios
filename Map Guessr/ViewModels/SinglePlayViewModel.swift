@@ -43,8 +43,8 @@ class SinglePlayViewModel: ObservableObject {
     init(level: Level, timerProvider: TimerProvider? = nil) {
         self.level = level
         self.timerProvider = timerProvider ?? GameTimerProvider()
-        self.isGameOver = repo.isGameOver
-        self.won = repo.won
+        self.isGameOver = false
+        self.won = false
         self.guessesLeft = repo.guessesLeft
         Task { await setupGame() }
     }
