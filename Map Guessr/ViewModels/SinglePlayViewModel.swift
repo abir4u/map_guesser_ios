@@ -214,6 +214,10 @@ class SinglePlayViewModel: ObservableObject {
         await self.submitGuess()
     }
     
+    func getCorrectCountry() -> String {
+        return repo.correctCountry
+    }
+    
     /*
      This is a temporary solution due to limitation of the API Country outline
      */

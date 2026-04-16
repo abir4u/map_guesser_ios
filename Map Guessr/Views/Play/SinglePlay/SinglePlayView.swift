@@ -85,19 +85,16 @@ struct SinglePlayView: View {
                 .presentationDetents([.medium])
                 .interactiveDismissDisabled()
             }
-            .alert("Game Over", isPresented: $viewModel.isGameOver) {
-                Button("Try A New One") {
-                    Task {
-                        await viewModel.setupGame()
-                    }
-                }
-            } message: {
-                Text("You ran out of guesses!")
+            .sheet(isPresented: $viewModel.isGameOver) {
+                LossSheetView(viewModel: viewModel, onContinue: {
+                    Task { await viewModel.setupGame() }
+                })
+                .presentationDetents([.height(560)])
             }
             if viewModel.isLoading {
                 LoadingOverlay(isShowing: viewModel.isLoading, message: "Processing...")
-                    .transition(.opacity) // Smooth transition prevents "snapping"
-                    .zIndex(2) // Ensure it stays on top of everything
+                    .transition(.opacity)
+                    .zIndex(2)
             }
         }
         .animation(.default, value: viewModel.isLoading)
