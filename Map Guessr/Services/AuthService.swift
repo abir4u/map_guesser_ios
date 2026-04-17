@@ -12,9 +12,28 @@ import UIKit
 
 @MainActor
 class AuthService: ObservableObject {
-    @Published var isLoggedIn: Bool = UserDefaults.standard.bool(forKey: "isLoggedIn")
-    @Published var userEmail: String? = UserDefaults.standard.string(forKey: "userEmail")
+    @Published var isLoggedIn: Bool
+    @Published var userEmail: String?
     
+    private let session: URLSession
+    private let defaults: UserDefaults
+    
+    init(session: URLSession = .shared, defaults: UserDefaults = .standard) {
+        self.session = session
+        self.defaults = defaults
+        self.isLoggedIn = defaults.bool(forKey: "isLoggedIn")
+        self.userEmail = defaults.string(forKey: "userEmail")
+    }
+    
+    func processSuccessfulLogin(email: String) async throws {
+        let success = try await authenticateWithBackend(email: email)
+        if success {
+            saveUser(email: email)
+        } else {
+            throw NSError(domain: "AuthService", code: -2, userInfo: [NSLocalizedDescriptionKey: "Backend Authentication Failed"])
+        }
+    }
+
     func handleGoogleLogin() async throws {
         guard let rootViewController = UIApplication.shared.rootViewController else {
             throw URLError(.cannotFindHost)
@@ -26,13 +45,7 @@ class AuthService: ObservableObject {
             throw NSError(domain: "AuthService", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to retrieve user email"])
         }
         
-        let success = try await authenticateWithBackend(email: email)
-        
-        if success {
-            saveUser(email: email)
-        } else {
-            throw NSError(domain: "AuthService", code: -2, userInfo: [NSLocalizedDescriptionKey: "Backend Authentication Failed"])
-        }
+        try await processSuccessfulLogin(email: email)
     }
     
     private func authenticateWithBackend(email: String) async throws -> Bool {
@@ -45,24 +58,23 @@ class AuthService: ObservableObject {
         let body = ["email": email]
         request.httpBody = try? JSONSerialization.data(withJSONObject: body)
         
-        let (_, response) = try await URLSession.shared.data(for: request)
+        let (_, response) = try await self.session.data(for: request)
         
         guard let httpResponse = response as? HTTPURLResponse else { return false }
         return httpResponse.statusCode == 200
     }
     
     private func saveUser(email: String) {
-        UserDefaults.standard.set(true, forKey: "isLoggedIn")
-        UserDefaults.standard.set(email, forKey: "userEmail")
+        defaults.set(true, forKey: "isLoggedIn")
+        defaults.set(email, forKey: "userEmail")
         
         self.isLoggedIn = true
         self.userEmail = email
     }
     
     func logout() {
-        UserDefaults.standard.removeObject(forKey: "isLoggedIn")
-        UserDefaults.standard.removeObject(forKey: "userEmail")
-        
+        defaults.removeObject(forKey: "isLoggedIn")
+        defaults.removeObject(forKey: "userEmail")
         GIDSignIn.sharedInstance.signOut()
         self.isLoggedIn = false
         self.userEmail = nil
