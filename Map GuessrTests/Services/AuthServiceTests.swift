@@ -11,6 +11,7 @@ import XCTest
 final class AuthServiceTests: XCTestCase {
     var sut: AuthService!
     var mockDefaults: UserDefaults!
+    var mockSession: URLSession!
     
     @MainActor
     override func setUp() {
@@ -20,9 +21,7 @@ final class AuthServiceTests: XCTestCase {
         
         let config = URLSessionConfiguration.ephemeral
         config.protocolClasses = [MockURLProtocol.self]
-        let mockSession = URLSession(configuration: config)
-        
-        sut = AuthService(session: mockSession, defaults: mockDefaults)
+        mockSession = URLSession(configuration: config)        
     }
 
     override func tearDown() {
@@ -33,29 +32,28 @@ final class AuthServiceTests: XCTestCase {
     }
 
     // MARK: - Initialisation Tests
-//    @MainActor
-//    func test_initialization_loadsFromUserDefaults() {
-//        mockDefaults.set(true, forKey: "isLoggedIn")
-//        mockDefaults.set("test@example.com", forKey: "userEmail")
-//        
-//        let newSut = AuthService(defaults: mockDefaults)
-//        
-//        XCTAssertTrue(newSut.isLoggedIn)
-//        XCTAssertEqual(newSut.userEmail, "test@example.com")
-//    }
+    @MainActor
+    func test_initialization_loadsFromUserDefaults() {
+        mockDefaults.set(true, forKey: "isLoggedIn")
+        mockDefaults.set("test@example.com", forKey: "userEmail")
+        
+        sut = AuthService(session: mockSession, defaults: mockDefaults)
+
+        XCTAssertTrue(sut.isLoggedIn)
+        XCTAssertEqual(sut.userEmail, "test@example.com")
+    }
 
     // MARK: - Logout Tests
     @MainActor
     func test_logout_clearsData() {
-        // Given
+        sut = AuthService(session: mockSession, defaults: mockDefaults)
+
         mockDefaults.set(true, forKey: "isLoggedIn")
         sut.isLoggedIn = true
         sut.userEmail = "test@example.com"
         
-        // When
         sut.logout()
         
-        // Then
         XCTAssertFalse(sut.isLoggedIn)
         XCTAssertNil(sut.userEmail)
         XCTAssertFalse(mockDefaults.bool(forKey: "isLoggedIn"))
@@ -69,6 +67,8 @@ final class AuthServiceTests: XCTestCase {
             let response = HTTPURLResponse(url: request.url!, statusCode: 401, httpVersion: nil, headerFields: nil)!
             return (response, Data())
         }
+        
+        sut = AuthService(session: mockSession, defaults: mockDefaults)
         
         do {
             try await sut.processSuccessfulLogin(email: "test@example.com")
@@ -88,6 +88,7 @@ final class AuthServiceTests: XCTestCase {
             return (response, Data())
         }
         
+        sut = AuthService(session: mockSession, defaults: mockDefaults)
         try await sut.processSuccessfulLogin(email: "test@example.com")
         
         XCTAssertTrue(sut.isLoggedIn)
