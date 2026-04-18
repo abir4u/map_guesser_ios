@@ -80,7 +80,7 @@ final class AuthServiceTests: XCTestCase {
         }
     }
     
-    // MARK: -
+    // MARK: - Save User Tests
     @MainActor
     func test_processSuccessfulLogin_savesUserOnSuccess() async throws {
         MockURLProtocol.requestHandler = { request in
@@ -96,6 +96,22 @@ final class AuthServiceTests: XCTestCase {
         XCTAssertTrue(mockDefaults.bool(forKey: "isLoggedIn"))
     }
 
+    // MARK: - Server Down Tests
+    @MainActor
+    func test_processSuccessfulLogin_failsIfServerCrashes() async {
+        MockURLProtocol.requestHandler = { request in
+            let response = HTTPURLResponse(url: request.url!, statusCode: 500, httpVersion: nil, headerFields: nil)!
+            return (response, Data())
+        }
+        sut = AuthService(session: mockSession, defaults: mockDefaults)
+
+        do {
+            try await sut.processSuccessfulLogin(email: "test@example.com")
+            XCTFail("Should fail on 500 error")
+        } catch {
+            XCTAssertFalse(mockDefaults.bool(forKey: "isLoggedIn"), "Should NOT save user on server error")
+        }
+    }
 }
 
 // MARK: - Helper Mock Network Protocol
