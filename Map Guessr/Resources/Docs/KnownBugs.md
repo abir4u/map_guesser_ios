@@ -9,7 +9,7 @@
 | 1 | ~~Some country outlines have not been found yet~~ | Medium | Done |
 | 2 | ~~Country outline API 404 Failure should not cause a bad experience for the player~~ | HIGH | Done |
 | 3 | ~~Country outline are of low quality~~ | Medium | Done |
-| 4 | Backend server is small | Low | Backlog |
+| 4 | Backend server capability is unknown. Performance testing is required. | Low | Backlog |
 | 5 | ~~Better loading indicators are needed for better player experience~~ | Medium | Done |
 | 6 | ~~Refactor from completion handlers to async/await for better app performance~~ | Medium | Done |
 | 7 | ~~Notify backend of win scenario~~ | Medium | Done |
@@ -17,9 +17,9 @@
 | 9 | ~~Clues should not be shown for guesses that are not valid country names and an error message should clearly notify that to the player~~ | HIGH | Done |
 | 10 | ~~Must store locally the number of guesses left for a game in progress~~ | HIGH | Done |
 | 11 | ~~Country Outline API gets triggered twice before and after click of Try again after defeat~~ | Low | Done |
-| 12 | Some tiny island countries are not displayed properly during game play | Medium | In Progress |
+| 12 | ~~Some tiny island countries are not displayed properly during game play~~ | Low | Will not fix |
 | 13 | ~~Once the full name of a country is written in text field, it disappears from prediction list~~ | Low | Done |
 | 14 | ~~Some country names are not identified correctly in distance API. Need to check each country~~ | HIGH | Done |
-| 15 | If a User wins or loses a game and then instead of replaying, closes the app and reopens it, then on navigating to Play, they will get the same map as the last one which they already played. | Low | Backlog |
-
+| 15 | ~~If a User wins or loses a game and then instead of replaying, closes the app and reopens it, then on navigating to Play, they will get the same map as the last one which they already played.~~ | Low | Done |
+| 16 | Maps of countries with colonies or far away tiny islands are too small for User to easily identify them | Medium | Backlog |
 
