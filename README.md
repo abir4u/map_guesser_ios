@@ -23,7 +23,7 @@ how far away the guessed country is from the actual country and in what directio
 ## Immediate Next Steps
 
 - Fix High Priority Bugs
-- Deliver Play with Friends feature in iOS
+- Discovery of Play with Friends feature - Why will anyone want to play this?
 - Deliver Single Play feature from Android app (separate repo)
 
 ## Known Bugs
