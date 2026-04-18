@@ -62,7 +62,7 @@ class CoreGameService: ObservableObject {
         guard let url = components?.url else { return nil }
         
         do {
-            return try await NetworkClient.request(url)
+            return try await NetworkClient.request(url, session: self.session)
         } catch {
             print("Error fetching clue: \(error)")
             return nil

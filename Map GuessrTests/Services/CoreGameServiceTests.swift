@@ -47,6 +47,7 @@ final class CoreGameServiceTests: XCTestCase {
 
         XCTAssertEqual(countries.count, 3)
         XCTAssertEqual(countries.first, "New Zealand")
+        XCTAssertEqual(countries, ["New Zealand", "Australia", "Japan"])
     }
 
     @MainActor
@@ -64,8 +65,7 @@ final class CoreGameServiceTests: XCTestCase {
 
     @MainActor
     func test_getCountryOutline_returnsImageOnValidData() async {
-        // Given: A small valid 1x1 PNG image data
-        let base64Image = "iVBORw0KGgoAAAANSU66666"
+        // A small valid 1x1 PNG image data (red dot)
         let imageData = Data(base64Encoded: "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==")!
         
         MockURLProtocol.requestHandler = { request in
@@ -89,14 +89,28 @@ final class CoreGameServiceTests: XCTestCase {
         let image = await sut.getCountryOutline(countryName: "Japan")
         XCTAssertNil(image)
     }
+    
+    @MainActor
+    func test_getCountryOutline_encodesSpacesAndSpecialCharacters() async {
+        MockURLProtocol.requestHandler = { request in
+            XCTAssertTrue(request.url!.absoluteString.contains("S%C3%A3o%20Tom%C3%A9%20and%20Pr%C3%ADncipe"))
+            return (HTTPURLResponse(url: request.url!, statusCode: 404, httpVersion: nil, headerFields: nil)!, Data())
+        }
+        _ = await sut.getCountryOutline(countryName: "São Tomé and Príncipe")
+    }
 
     // MARK: - getClue Tests
-
     @MainActor
     func test_getClue_buildsCorrectQueryParameters() async {
         let expectedDistance = 1500.0
+        let expectedBearing = 45.0
+        
         let jsonString = """
-        { "distance": \(expectedDistance), "direction": "North" }
+        { 
+            "distance_km": \(expectedDistance), 
+            "direction": "North",
+            "bearing_degrees": \(expectedBearing)
+        }
         """
         let data = jsonString.data(using: .utf8)!
 
@@ -112,7 +126,7 @@ final class CoreGameServiceTests: XCTestCase {
         let clue = await sut.getClue(origin: "Japan", destination: "France")
         
         XCTAssertNotNil(clue)
-        // Adjust these properties to match your actual DistanceResponse model
-        // XCTAssertEqual(clue?.distance, expectedDistance)
+        XCTAssertEqual(clue?.distance_km, expectedDistance)
+        XCTAssertEqual(clue?.bearing_degrees, expectedBearing)
     }
 }
