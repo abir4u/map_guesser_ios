@@ -8,8 +8,8 @@
 import Foundation
 
 class NetworkClient {
-    static func request<T: Decodable>(_ url: URL) async throws -> T {
-        let (data, response) = try await URLSession.shared.data(from: url)
+    static func request<T: Decodable>(_ url: URL, session: URLSession = .shared) async throws -> T {
+        let (data, response) = try await session.data(from: url)
         guard (response as? HTTPURLResponse)?.statusCode == 200 else {
             throw URLError(.badServerResponse)
         }

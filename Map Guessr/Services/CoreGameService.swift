@@ -13,12 +13,17 @@ import SwiftUI
 
 @MainActor
 class CoreGameService: ObservableObject {
+    private let session: URLSession
+
+    init(session: URLSession = .shared) {
+        self.session = session
+    }
     
     func getCountryNames() async -> [String] {
         guard let url = URL(string: APIConfig.Endpoints.countries) else { return [] }
         
         do {
-            let response: CountryResponse = try await NetworkClient.request(url)
+            let response: CountryResponse = try await NetworkClient.request(url, session: self.session)
             return response.countries
         } catch {
             print("Error fetching countries: \(error)")
@@ -33,7 +38,7 @@ class CoreGameService: ObservableObject {
         }
         
         do {
-            let (data, response) = try await URLSession.shared.data(from: url)
+            let (data, response) = try await self.session.data(from: url)
             
             guard (response as? HTTPURLResponse)?.statusCode == 200,
                   let uiImage = UIImage(data: data) else {
