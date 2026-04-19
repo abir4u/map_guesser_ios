@@ -15,12 +15,16 @@ class HomeViewModel: ObservableObject {
     @Published var errorMessage: String?
     @Published var isLoading = false
     
-    @Published var authService = AuthService()
+    @Published var authService: AuthService
     
     private var pendingMode: GameMode?
 
     var isLoggedIn: Bool {
         authService.isLoggedIn
+    }
+    
+    init(authService: AuthService? = nil) {
+        self.authService = authService ?? AuthService()
     }
 
     func handleButtonTap(mode: GameMode) {
