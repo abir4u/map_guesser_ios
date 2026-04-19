@@ -48,9 +48,9 @@ struct HomeView: View {
 
                     VStack(spacing: 16) {
                         HomeMenuButton(
-                            title: "Solo Play",
+                            title: "Let's Play",
                             icon: "person.fill",
-                            topColor: Color(red: 24/255, green: 164/255, blue: 240/255),
+                            topColor: .appBrandBlue,
                             bottomColor: .purple
                         ) {
                             showingLevelSheet.toggle()
