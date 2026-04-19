@@ -15,42 +15,57 @@ struct HomeView: View {
     var body: some View {
         NavigationStack(path: $viewModel.path) {
             ZStack {
-                // 1. Background Gradient for a "Premium" feel
                 LinearGradient(gradient: Gradient(colors: [Color.blue.opacity(0.1), Color.white]),
                                startPoint: .top, endPoint: .bottom)
                     .ignoresSafeArea()
 
                 VStack(spacing: 20) {
-                    // 2. Styled Logo
+                    Spacer()
+                    
                     VStack(spacing: 5) {
-                        Image(systemName: "map.fill")
-                            .font(.system(size: 60))
-                            .foregroundColor(.blue)
+                        Image("map_guessr_image")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 140, height: 140)
                             .shadow(radius: 5)
+                            .padding(.bottom, 30)
                         
-                        Text("Map Guesser")
+                        Text("Map Guessr")
                             .font(.system(.largeTitle, design: .rounded).bold())
-                            .tracking(1) // Slight letter spacing
+                            .tracking(1)
+                            .foregroundStyle(
+                                LinearGradient(
+                                    colors: [.blue, .purple],
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                )
+                            )
+                            .shadow(radius: 8, x: 0, y: 4)
                     }
-                    .padding(.top, 40)
+                    .padding(.top, 10)
                     
                     Spacer()
 
-                    // 3. Game Mode Buttons using a consistent style
                     VStack(spacing: 16) {
-                        HomeMenuButton(title: "Solo Play", icon: "person.fill", color: .blue) {
+                        HomeMenuButton(
+                            title: "Solo Play",
+                            icon: "person.fill",
+                            topColor: Color(red: 24/255, green: 164/255, blue: 240/255),
+                            bottomColor: .purple
+                        ) {
                             showingLevelSheet.toggle()
                         }
                         
-                        HomeMenuButton(title: "With Friends", icon: "person.2.fill", color: .green) {
-                            viewModel.handleButtonTap(mode: .friends)
-                        }
-                        
-                        HomeMenuButton(title: "Global Match", icon: "globe", color: .orange) {
-                            viewModel.handleButtonTap(mode: .online)
-                        }
+//                        HomeMenuButton(title: "With Friends", icon: "person.2.fill", color: .green) {
+//                            viewModel.handleButtonTap(mode: .friends)
+//                        }
+//                        
+//                        HomeMenuButton(title: "Global Match", icon: "globe", color: .orange) {
+//                            viewModel.handleButtonTap(mode: .online)
+//                        }
                     }
                     .padding(.horizontal, 30)
+                    .padding(.bottom, 50)
                     
                     if let error = viewModel.errorMessage {
                         Label(error, systemImage: "exclamationmark.triangle.fill")
@@ -61,11 +76,9 @@ struct HomeView: View {
                             .cornerRadius(10)
                     }
                     
-                    Spacer()
                 }
                 .padding()
                 
-                // 4. Enhanced Loading Overlay
                 if viewModel.isLoading {
                     ZStack {
                         Color.black.opacity(0.3).ignoresSafeArea()
@@ -76,7 +89,7 @@ struct HomeView: View {
                                 .font(.headline)
                         }
                         .padding(30)
-                        .background(.ultraThinMaterial) // Modern frosted glass effect
+                        .background(.ultraThinMaterial)
                         .cornerRadius(20)
                     }
                 }
@@ -113,11 +126,11 @@ struct HomeView: View {
     }
 }
 
-// Custom button component specifically for the Home screen
 struct HomeMenuButton: View {
     let title: String
     let icon: String
-    let color: Color
+    let topColor: Color
+    let bottomColor: Color
     let action: () -> Void
     
     var body: some View {
@@ -128,18 +141,27 @@ struct HomeMenuButton: View {
                 Text(title)
                     .font(.title3.bold())
                 Spacer()
-                Image(systemName: "play.fill") // "Game-y" play icon
+                Image(systemName: "play.fill")
                     .font(.caption)
             }
             .padding(.vertical, 18)
             .padding(.horizontal, 25)
             .frame(maxWidth: .infinity)
-            .background(color)
+            .background(
+                LinearGradient(
+                    stops: [
+                        .init(color: topColor, location: 0.5),
+                        .init(color: bottomColor.opacity(0.6), location: 1.2)
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+            )
             .foregroundColor(.white)
             .cornerRadius(20)
-            .shadow(color: color.opacity(0.4), radius: 10, x: 0, y: 5)
+            .shadow(color: topColor.opacity(0.4), radius: 10, x: 0, y: 5)
         }
-        .buttonStyle(GameButtonStyle()) // Uses the same scale animation we made earlier
+        .buttonStyle(GameButtonStyle())
     }
 }
 
