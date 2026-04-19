@@ -55,7 +55,7 @@ struct HomeView: View {
                         ) {
                             showingLevelSheet.toggle()
                         }
-                        
+//                        TODO: WHY WILL USERS ENJOY "WITH FRIENDS" & "GLOBAL MATCH" FEATURES?
 //                        HomeMenuButton(title: "With Friends", icon: "person.2.fill", color: .green) {
 //                            viewModel.handleButtonTap(mode: .friends)
 //                        }
