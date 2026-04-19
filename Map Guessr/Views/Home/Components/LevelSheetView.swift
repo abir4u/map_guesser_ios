@@ -29,7 +29,7 @@ struct LevelSheetView: View {
                     title: "Beginner",
                     subtitle: "New to the map? Start here!",
                     icon: "leaf.fill",
-                    color: .green
+                    color: .appBrandBlue
                 ) {
                     select(.Beginner)
                 }
@@ -38,16 +38,14 @@ struct LevelSheetView: View {
                     title: "Pro",
                     subtitle: "Think you know the world?",
                     icon: "flame.fill",
-                    color: .orange
+                    color: .purple
                 ) {
                     select(.Pro)
                 }
             }
             .padding(.horizontal)
-            
-            Spacer()
         }
-        .presentationDetents([.medium]) // Makes the sheet a nice half-height
+        .presentationDetents([.height(300)])
         .presentationDragIndicator(.visible)
     }
     
