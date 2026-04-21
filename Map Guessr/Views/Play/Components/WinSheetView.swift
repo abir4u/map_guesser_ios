@@ -6,10 +6,13 @@
 //
 
 import SwiftUI
+import ConfettiSwiftUI
 
 struct WinSheetView: View {
     let correctCountry: String
     let onContinue: () -> Void
+    
+    @State private var sheetConfetti: Int = 0
     
     var body: some View {
         VStack(spacing: 32) {
@@ -66,5 +69,9 @@ struct WinSheetView: View {
         .padding(32)
         .multilineTextAlignment(.center)
         .interactiveDismissDisabled(true)
+        .confettiCannon(trigger: $sheetConfetti, num: 30, radius: 400.0)
+        .onAppear {
+            sheetConfetti += 1
+        }
     }
 }

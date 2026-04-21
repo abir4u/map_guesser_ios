@@ -6,10 +6,12 @@
 //
 
 import SwiftUI
+import ConfettiSwiftUI
 
 struct SinglePlayView: View {
     let level: Level
     @StateObject var viewModel: SinglePlayViewModel
+    @State private var confettiCounter: Int = 0
     @FocusState private var isTextFieldFocused: Bool
     
     @MainActor
@@ -84,6 +86,9 @@ struct SinglePlayView: View {
                 }
                 .presentationDetents([.medium])
                 .interactiveDismissDisabled()
+                .onAppear {
+                    confettiCounter += 1
+                }
             }
             .sheet(isPresented: $viewModel.isGameOver) {
                 LossSheetView(viewModel: viewModel, onContinue: {
@@ -98,5 +103,6 @@ struct SinglePlayView: View {
             }
         }
         .animation(.default, value: viewModel.isLoading)
+        .confettiCannon(trigger: $confettiCounter, num: 50, radius: 500.0, hapticFeedback: true)
     }
 }
