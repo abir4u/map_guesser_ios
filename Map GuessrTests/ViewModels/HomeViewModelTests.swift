@@ -21,7 +21,6 @@ class MockAuthService: AuthService {
         if shouldFail {
             throw NSError(domain: "Test", code: -1, userInfo: [NSLocalizedDescriptionKey: "Login Failed"])
         }
-        // Simulate a success by updating the published property
         self.isLoggedIn = true
     }
     
@@ -52,26 +51,19 @@ final class HomeViewModelTests: XCTestCase {
     
     @MainActor
     func test_handleButtonTap_navigatesImmediatelyIfLoggedIn() {
-        // Given
         mockAuth.isLoggedIn = true
         
-        // When
         sut.handleButtonTap(mode: .play(.Beginner))
         
-        // Then
         XCTAssertEqual(sut.path.count, 1, "Should append to path immediately when logged in")
     }
 
     @MainActor
     func test_handleButtonTap_triggersLoginIfNotLoggedIn() async {
-        // Given
         mockAuth.isLoggedIn = false
         
-        // When
         sut.handleButtonTap(mode: .play(.Beginner))
         
-        // Then
-        // We wait a tiny bit for the Task to start
         try? await Task.sleep(nanoseconds: 100_000_000)
         XCTAssertTrue(mockAuth.loginCalled, "Should have triggered the login flow")
     }
@@ -80,15 +72,10 @@ final class HomeViewModelTests: XCTestCase {
 
     @MainActor
     func test_loginFlow_updatesLoadingStateAndPathOnSuccess() async {
-        // Given
         mockAuth.isLoggedIn = false
         
-        // When
-        // We call the handleButtonTap which triggers the async login
         sut.handleButtonTap(mode: .play(.Beginner))
         
-        // We can't easily check isLoading = true because it happens so fast,
-        // but we can check the end result:
         try? await Task.sleep(nanoseconds: 200_000_000)
         
         XCTAssertFalse(sut.isLoading)
@@ -98,15 +85,12 @@ final class HomeViewModelTests: XCTestCase {
 
     @MainActor
     func test_loginFlow_setsErrorMessageOnFailure() async {
-        // Given
         mockAuth.shouldFail = true
         
-        // When
         sut.handleButtonTap(mode: .play(.Beginner))
         
         try? await Task.sleep(nanoseconds: 200_000_000)
         
-        // Then
         XCTAssertNotNil(sut.errorMessage)
         XCTAssertEqual(sut.errorMessage, "Login Failed")
         XCTAssertEqual(sut.path.count, 0, "Should not navigate on failure")
@@ -116,14 +100,11 @@ final class HomeViewModelTests: XCTestCase {
 
     @MainActor
     func test_logout_clearsPathAndAuth() {
-        // Given
         sut.path.append(GameMode.play(.Beginner))
         mockAuth.isLoggedIn = true
         
-        // When
         sut.logout()
         
-        // Then
         XCTAssertEqual(sut.path.count, 0)
         XCTAssertFalse(sut.isLoggedIn)
     }
