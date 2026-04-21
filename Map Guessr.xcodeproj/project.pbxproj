@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		BAB1A9172F982F78000A9F62 /* ConfettiSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = BAB1A9162F982F78000A9F62 /* ConfettiSwiftUI */; };
 		BAF6346E2F7F44AC00037F52 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = BAF6346D2F7F44AC00037F52 /* GoogleSignIn */; };
 		BAF634702F7F44AC00037F52 /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = BAF6346F2F7F44AC00037F52 /* GoogleSignInSwift */; };
 /* End PBXBuildFile section */
@@ -57,6 +58,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BAB1A9172F982F78000A9F62 /* ConfettiSwiftUI in Frameworks */,
 				BAF6346E2F7F44AC00037F52 /* GoogleSignIn in Frameworks */,
 				BAF634702F7F44AC00037F52 /* GoogleSignInSwift in Frameworks */,
 			);
@@ -121,6 +123,7 @@
 			packageProductDependencies = (
 				BAF6346D2F7F44AC00037F52 /* GoogleSignIn */,
 				BAF6346F2F7F44AC00037F52 /* GoogleSignInSwift */,
+				BAB1A9162F982F78000A9F62 /* ConfettiSwiftUI */,
 			);
 			productName = "Map Guessr";
 			productReference = BAF634402F7F387F00037F52 /* Map Guessr.app */;
@@ -206,6 +209,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				BAF6346C2F7F44AC00037F52 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
+				BAB1A9152F982F78000A9F62 /* XCRemoteSwiftPackageReference "ConfettiSwiftUI" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = BAF634412F7F387F00037F52 /* Products */;
@@ -633,6 +637,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		BAB1A9152F982F78000A9F62 /* XCRemoteSwiftPackageReference "ConfettiSwiftUI" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/simibac/ConfettiSwiftUI";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.0.0;
+			};
+		};
 		BAF6346C2F7F44AC00037F52 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/google/GoogleSignIn-iOS";
@@ -644,6 +656,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		BAB1A9162F982F78000A9F62 /* ConfettiSwiftUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BAB1A9152F982F78000A9F62 /* XCRemoteSwiftPackageReference "ConfettiSwiftUI" */;
+			productName = ConfettiSwiftUI;
+		};
 		BAF6346D2F7F44AC00037F52 /* GoogleSignIn */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = BAF6346C2F7F44AC00037F52 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
