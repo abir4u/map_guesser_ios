@@ -35,9 +35,30 @@
 		BAF634572F7F388200037F52 /* Map GuessrUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Map GuessrUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		BAB1A9202FA0DCE3000A9F62 /* Exceptions for "Map Guessr" folder in "Map GuessrTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Resources/Privacy/PrivacyInfo.xcprivacy,
+			);
+			target = BAF6344C2F7F388200037F52 /* Map GuessrTests */;
+		};
+		BAB1A9212FA0DCE3000A9F62 /* Exceptions for "Map Guessr" folder in "Map GuessrUITests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Resources/Privacy/PrivacyInfo.xcprivacy,
+			);
+			target = BAF634562F7F388200037F52 /* Map GuessrUITests */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		BAF634422F7F387F00037F52 /* Map Guessr */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				BAB1A9202FA0DCE3000A9F62 /* Exceptions for "Map Guessr" folder in "Map GuessrTests" target */,
+				BAB1A9212FA0DCE3000A9F62 /* Exceptions for "Map Guessr" folder in "Map GuessrUITests" target */,
+			);
 			path = "Map Guessr";
 			sourceTree = "<group>";
 		};
