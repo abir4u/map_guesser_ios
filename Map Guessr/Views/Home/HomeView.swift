@@ -18,6 +18,7 @@ struct HomeView: View {
                 LinearGradient(gradient: Gradient(colors: [Color.blue.opacity(0.1), Color.white]),
                                startPoint: .top, endPoint: .bottom)
                     .ignoresSafeArea()
+                    .preferredColorScheme(.light)
 
                 VStack(spacing: 20) {
                     Spacer()
