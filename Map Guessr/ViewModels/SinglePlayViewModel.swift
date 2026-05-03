@@ -45,6 +45,9 @@ class SinglePlayViewModel: ObservableObject {
         self.timerProvider = timerProvider ?? GameTimerProvider()
         self.isGameOver = false
         self.won = false
+        if (repo.guessesLeft == 0) {
+            repo.guessesLeft = GUESS_LIMIT
+        }
         self.guessesLeft = repo.guessesLeft
         Task { await setupGame() }
     }
