@@ -37,30 +37,6 @@
                 <string>NSPrivacyPurposeAppFunctionality</string>
             </array>
         </dict>
-        <dict>
-            <key>NSPrivacyCollectedDataType</key>
-            <string>NSPrivacyDataTypeName</string>
-            <key>NSPrivacyCollectedDataTypeLinked</key>
-            <false/>
-            <key>NSPrivacyCollectedDataTypeTracking</key>
-            <false/>
-            <key>NSPrivacyCollectedDataTypePurposes</key>
-            <array>
-                <string>NSPrivacyPurposeAppFunctionality</string>
-            </array>
-        </dict>
-        <dict>
-            <key>NSPrivacyCollectedDataType</key>
-            <string>NSPrivacyDataTypeUserID</string>
-            <key>NSPrivacyCollectedDataTypeLinked</key>
-            <false/>
-            <key>NSPrivacyCollectedDataTypeTracking</key>
-            <false/>
-            <key>NSPrivacyCollectedDataTypePurposes</key>
-            <array>
-                <string>NSPrivacyPurposeAppFunctionality</string>
-            </array>
-        </dict>
     </array>
 </dict>
 </plist>
