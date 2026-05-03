@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		BAB1A9172F982F78000A9F62 /* ConfettiSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = BAB1A9162F982F78000A9F62 /* ConfettiSwiftUI */; };
+		BAE816AC2FA6CD4000B0B239 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = BAE816862FA6CD4000B0B239 /* PrivacyInfo.xcprivacy */; };
+		BAE816CE2FA6CD4000B0B239 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = BAE816862FA6CD4000B0B239 /* PrivacyInfo.xcprivacy */; };
+		BAE816CF2FA6CD4000B0B239 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = BAE816862FA6CD4000B0B239 /* PrivacyInfo.xcprivacy */; };
 		BAF6346E2F7F44AC00037F52 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = BAF6346D2F7F44AC00037F52 /* GoogleSignIn */; };
 		BAF634702F7F44AC00037F52 /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = BAF6346F2F7F44AC00037F52 /* GoogleSignInSwift */; };
 /* End PBXBuildFile section */
@@ -30,35 +33,15 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		BAE816862FA6CD4000B0B239 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		BAF634402F7F387F00037F52 /* Map Guessr.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Map Guessr.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BAF6344D2F7F388200037F52 /* Map GuessrTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Map GuessrTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BAF634572F7F388200037F52 /* Map GuessrUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Map GuessrUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		BAB1A9202FA0DCE3000A9F62 /* Exceptions for "Map Guessr" folder in "Map GuessrTests" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Resources/Privacy/PrivacyInfo.xcprivacy,
-			);
-			target = BAF6344C2F7F388200037F52 /* Map GuessrTests */;
-		};
-		BAB1A9212FA0DCE3000A9F62 /* Exceptions for "Map Guessr" folder in "Map GuessrUITests" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Resources/Privacy/PrivacyInfo.xcprivacy,
-			);
-			target = BAF634562F7F388200037F52 /* Map GuessrUITests */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		BAF634422F7F387F00037F52 /* Map Guessr */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				BAB1A9202FA0DCE3000A9F62 /* Exceptions for "Map Guessr" folder in "Map GuessrTests" target */,
-				BAB1A9212FA0DCE3000A9F62 /* Exceptions for "Map Guessr" folder in "Map GuessrUITests" target */,
-			);
 			path = "Map Guessr";
 			sourceTree = "<group>";
 		};
@@ -109,6 +92,7 @@
 				BAF634502F7F388200037F52 /* Map GuessrTests */,
 				BAF6345A2F7F388200037F52 /* Map GuessrUITests */,
 				BAF634412F7F387F00037F52 /* Products */,
+				BAE816862FA6CD4000B0B239 /* PrivacyInfo.xcprivacy */,
 			);
 			sourceTree = "<group>";
 		};
@@ -249,6 +233,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BAE816AC2FA6CD4000B0B239 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -256,6 +241,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BAE816CE2FA6CD4000B0B239 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -263,6 +249,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BAE816CF2FA6CD4000B0B239 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
