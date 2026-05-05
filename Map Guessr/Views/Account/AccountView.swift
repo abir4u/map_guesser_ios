@@ -12,6 +12,8 @@ struct AccountView: View {
     @ObservedObject var viewModel: HomeViewModel
     @Environment(\.dismiss) var dismiss
     
+    @State private var showingDeleteConfirmation = false
+    
     var body: some View {
         VStack(spacing: 30) {
             Image(systemName: "person.circle.fill")
@@ -29,8 +31,7 @@ struct AccountView: View {
                 }
                 
                 Button(role: .destructive) {
-                    // TODO: EXECUTE ACCOUNT DELETION
-                    print("Delete account triggered")
+                    showingDeleteConfirmation = true
                 } label: {
                     Label("Delete Account", systemImage: "trash")
                         .foregroundStyle(.red)
@@ -50,5 +51,13 @@ struct AccountView: View {
         }
         .navigationTitle("Account")
         .navigationBarTitleDisplayMode(.inline)
+        .alert("Are you sure?", isPresented: $showingDeleteConfirmation) {
+            Button("Yes", role: .destructive) {
+                // TODO: EXECUTE ACCOUNT DELETION
+            }
+            Button("No", role: .cancel) { }
+        } message: {
+            Text("Any data linked to the deleted account cannot be retrieved. This action is permanent.")
+        }
     }
 }
