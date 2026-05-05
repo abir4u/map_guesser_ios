@@ -22,6 +22,12 @@ struct AccountView: View {
                 .foregroundColor(.blue)
                 .padding(.top, 40)
             
+            if let error = viewModel.errorMessage {
+                Text(error)
+                    .foregroundColor(.red)
+                    .font(.caption)
+                    .padding(.horizontal)
+            }
             List {
                 Button {
                     viewModel.logout()
@@ -38,6 +44,7 @@ struct AccountView: View {
                 }
             }
             .listStyle(.insetGrouped)
+            .disabled(viewModel.isLoading)
             
             Spacer()
             
@@ -48,16 +55,31 @@ struct AccountView: View {
             .font(.caption)
             .foregroundColor(.secondary)
             .padding(.bottom, 20)
+            
+            if viewModel.isLoading {
+                Color.black.opacity(0.2).ignoresSafeArea()
+                ProgressView("Deleting Account...")
+                    .padding()
+                    .background(Color.white)
+                    .cornerRadius(10)
+            }
         }
         .navigationTitle("Account")
         .navigationBarTitleDisplayMode(.inline)
         .alert("Are you sure?", isPresented: $showingDeleteConfirmation) {
             Button("Yes", role: .destructive) {
-                // TODO: EXECUTE ACCOUNT DELETION
+                Task { await viewModel.deleteUserAccount() }
             }
             Button("No", role: .cancel) { }
         } message: {
             Text("Any data linked to the deleted account cannot be retrieved. This action is permanent.")
+        }
+        .alert("Account Deleted", isPresented: $viewModel.showingDeleteSuccess) {
+            Button("Okay") {
+                dismiss()
+            }
+        } message: {
+            Text("Your account and associated data have been successfully removed.")
         }
     }
 }

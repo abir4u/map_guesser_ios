@@ -14,6 +14,7 @@ class HomeViewModel: ObservableObject {
     @Published var path = NavigationPath()
     @Published var errorMessage: String?
     @Published var isLoading = false
+    @Published var showingDeleteSuccess = false
     
     @Published var authService: AuthService
     
@@ -56,5 +57,19 @@ class HomeViewModel: ObservableObject {
     func logout() {
         authService.logout()
         path = NavigationPath()
+    }
+    
+    func deleteUserAccount() async {
+        isLoading = true
+        errorMessage = nil
+        
+        do {
+            try await authService.deleteAccount()
+            showingDeleteSuccess = true
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+        
+        isLoading = false
     }
 }
