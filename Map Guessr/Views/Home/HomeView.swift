@@ -106,16 +106,13 @@ struct HomeView: View {
             .toolbar {
                 if viewModel.isLoggedIn {
                     ToolbarItem(placement: .navigationBarTrailing) {
-                        Button(action: { showingLogoutAlert = true }) {
-                            Image(systemName: "person.crop.circle.badge.xmark")
+                        NavigationLink(destination: AccountView(viewModel: viewModel)) {
+                            Image(systemName: "person.circle")
                                 .symbolRenderingMode(.palette)
-                                .foregroundStyle(.red, .blue)
+                                .foregroundStyle(.blue)
                         }
                     }
                 }
-            }
-            .confirmationDialog("Logout?", isPresented: $showingLogoutAlert, titleVisibility: .visible) {
-                Button("Yes, Logout", role: .destructive) { viewModel.logout() }
             }
             .sheet(isPresented: $showingLevelSheet) {
                 LevelSheetView { selectedLevel in
