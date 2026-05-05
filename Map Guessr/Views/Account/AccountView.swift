@@ -48,14 +48,25 @@ struct AccountView: View {
                 .listStyle(.insetGrouped)
                 .disabled(viewModel.isLoading)
                 
-                Spacer()
-                
-                VStack(spacing: 5) {
-                    Text("Version 1.0.0")
-                    Text("Developed by Abir Pal")
+                VStack(spacing: 6) {
+                    Text("App Version 1.0.0")
+                        .font(.footnote)
+                        .foregroundColor(.secondary)
+                    
+                    Text("Designed & Developed by")
+                        .font(.system(size: 10))
+                        .foregroundColor(Color(UIColor.tertiaryLabel))
+                        .padding(.vertical, 4)
+                    
+                    Text("Abir Pal")
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundColor(.gray.opacity(0.6))
+                        .padding(.horizontal, 24)
+                        .padding(.vertical, 4)
+                        .background(Color(.systemGray6))
+                        .cornerRadius(8)
+                        .tracking(0.5)
                 }
-                .font(.caption)
-                .foregroundColor(.secondary)
                 .padding(.bottom, 20)
             }
             .blur(radius: viewModel.isLoading ? 3 : 0)
