@@ -47,6 +47,29 @@ class AuthService: ObservableObject {
         
         try await processSuccessfulLogin(email: email)
     }
+
+    func deleteAccount() async throws {
+        try await GIDSignIn.sharedInstance.disconnect()
+        
+        guard let email = userEmail, let url = URL(string: APIConfig.Endpoints.auth) else {
+            throw NSError(domain: "AuthService", code: -3, userInfo: [NSLocalizedDescriptionKey: "Invalid User Session"])
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "DELETE"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        let body = ["email": email]
+        request.httpBody = try? JSONSerialization.data(withJSONObject: body)
+        
+        let (_, response) = try await self.session.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+            throw NSError(domain: "AuthService", code: -4, userInfo: [NSLocalizedDescriptionKey: "Failed to delete data from server"])
+        }
+        
+        logout()
+    }
+
     
     private func authenticateWithBackend(email: String) async throws -> Bool {
         guard let url = URL(string: APIConfig.Endpoints.auth) else { return false }
