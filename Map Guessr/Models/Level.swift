@@ -7,8 +7,18 @@
 
 import Foundation
 
-enum Level: Hashable {
-    case Beginner
-    case Pro
-    case None
+enum Level: String, CaseIterable, Hashable {
+    case Beginner = "Beginner"
+    case Pro = "Pro"
+    
+    var subtitle: String {
+        switch self {
+        case .Beginner: return "New to the map? Start here!"
+        case .Pro: return "Think you know the world?"
+        }
+    }
+
+    var icon: String {
+        self == .Beginner ? "leaf.fill" : "flame.fill"
+    }
 }

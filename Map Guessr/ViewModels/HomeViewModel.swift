@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import AuthenticationServices
 internal import Combine
 
 @MainActor
@@ -15,6 +16,7 @@ class HomeViewModel: ObservableObject {
     @Published var errorMessage: String?
     @Published var isLoading = false
     @Published var showingDeleteSuccess = false
+    @Published var showingLoginOptions = false
     
     @Published var authService: AuthService
     
@@ -31,20 +33,18 @@ class HomeViewModel: ObservableObject {
     func handleButtonTap(mode: GameMode) {
         if authService.isLoggedIn {
             path.append(mode)
+            showingLoginOptions = false
         } else {
-            pendingMode = mode
-            Task {
-                await loginAndNavigate(to: mode)
-            }
+            showingLoginOptions = true
         }
     }
     
-    private func loginAndNavigate(to mode: GameMode) async {
+    func loginAndNavigate(to mode: GameMode, handleLoginOption: () async throws -> Void) async {
         isLoading = true
         errorMessage = nil
         
         do {
-            try await authService.handleGoogleLogin()
+            try await handleLoginOption()
             path.append(mode)
             pendingMode = nil
         } catch {

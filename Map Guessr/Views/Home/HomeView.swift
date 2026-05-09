@@ -11,6 +11,8 @@ struct HomeView: View {
     @StateObject private var viewModel = HomeViewModel()
     @State private var showingLevelSheet = false
     @State private var showingLogoutAlert = false
+    @State private var activeSheet: GameMode = .none
+    @State private var showingLoginOptions = false
     
     var body: some View {
         NavigationStack(path: $viewModel.path) {
@@ -54,16 +56,8 @@ struct HomeView: View {
                             topColor: .appBrandBlue,
                             bottomColor: .purple
                         ) {
-                            showingLevelSheet.toggle()
+                            showingLevelSheet = true
                         }
-//                        TODO: WHY WILL USERS ENJOY "WITH FRIENDS" & "GLOBAL MATCH" FEATURES?
-//                        HomeMenuButton(title: "With Friends", icon: "person.2.fill", color: .green) {
-//                            viewModel.handleButtonTap(mode: .friends)
-//                        }
-//                        
-//                        HomeMenuButton(title: "Global Match", icon: "globe", color: .orange) {
-//                            viewModel.handleButtonTap(mode: .online)
-//                        }
                     }
                     .padding(.horizontal, 30)
                     .padding(.bottom, 50)
@@ -99,8 +93,7 @@ struct HomeView: View {
             .navigationDestination(for: GameMode.self) { mode in
                 switch mode {
                 case .play(let level): SinglePlayView(level: level)
-                case .friends: Text("Friends Lobby")
-                case .online: Text("Global Matchmaking")
+                default: Text("Coming Soon")
                 }
             }
             .toolbar {
@@ -117,8 +110,16 @@ struct HomeView: View {
             .sheet(isPresented: $showingLevelSheet) {
                 LevelSheetView { selectedLevel in
                     showingLevelSheet = false
-                    viewModel.handleButtonTap(mode: .play(selectedLevel))
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        activeSheet = .play(selectedLevel)
+                        viewModel.handleButtonTap(mode: activeSheet)
+                        showingLoginOptions = viewModel.showingLoginOptions
+                    }
+                    
                 }
+            }
+            .sheet(isPresented: $showingLoginOptions) {
+                LoginOptionsSheet(viewModel: viewModel, selectedMode: activeSheet)
             }
         }
     }

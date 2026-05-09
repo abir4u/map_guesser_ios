@@ -13,7 +13,6 @@ struct LevelSheetView: View {
     
     var body: some View {
         VStack(spacing: 30) {
-            // Header
             VStack(spacing: 8) {
                 Text("Select Difficulty")
                     .font(.system(.title, design: .rounded).bold())
@@ -23,24 +22,17 @@ struct LevelSheetView: View {
             }
             .padding(.top, 20)
             
-            // Buttons
             VStack(spacing: 16) {
-                LevelButton(
-                    title: "Beginner",
-                    subtitle: "New to the map? Start here!",
-                    icon: "leaf.fill",
-                    color: .appBrandBlue
-                ) {
-                    select(.Beginner)
-                }
-                
-                LevelButton(
-                    title: "Pro",
-                    subtitle: "Think you know the world?",
-                    icon: "flame.fill",
-                    color: .purple
-                ) {
-                    select(.Pro)
+                ForEach(Level.allCases, id: \.self) { level in
+                    LevelButton(
+                        title: level.rawValue,
+                        subtitle: level.subtitle,
+                        icon: level.icon,
+                        color: level == .Beginner ? .appBrandBlue : .purple
+                    ) {
+                        dismiss()
+                        onSelect(level)
+                    }
                 }
             }
             .padding(.horizontal)
@@ -66,9 +58,17 @@ struct LevelButton: View {
     var body: some View {
         Button(action: action) {
             HStack(spacing: 20) {
-                Image(systemName: icon)
-                    .font(.title)
-                    .frame(width: 40)
+                if icon == "googleLogo" {
+                    Image(icon)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 30, height: 30)
+                        .frame(width: 40)
+                } else {
+                    Image(systemName: icon)
+                        .font(.title)
+                        .frame(width: 40)
+                }
                 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(title.uppercased())
@@ -92,7 +92,7 @@ struct LevelButton: View {
             .cornerRadius(15)
             .shadow(color: color.opacity(0.3), radius: 8, x: 0, y: 4)
         }
-        .buttonStyle(GameButtonStyle()) // Adds the "press down" effect
+        .buttonStyle(GameButtonStyle())
     }
 }
 
