@@ -31,7 +31,7 @@ class HomeViewModel: ObservableObject {
     }
 
     func handleButtonTap(mode: GameMode) {
-        if authService.isLoggedIn {
+        if (authService.isLoggedIn || mode == .play(.Beginner)) {
             path.append(mode)
             showingLoginOptions = false
         } else {
