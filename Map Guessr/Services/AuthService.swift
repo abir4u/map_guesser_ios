@@ -7,6 +7,7 @@
 
 import Foundation
 import GoogleSignIn
+import AuthenticationServices
 internal import Combine
 import UIKit
 
@@ -31,6 +32,24 @@ class AuthService: ObservableObject {
             saveUser(email: email)
         } else {
             throw NSError(domain: "AuthService", code: -2, userInfo: [NSLocalizedDescriptionKey: "Backend Authentication Failed"])
+        }
+    }
+    
+    func handleAppleLogin(result: Result<ASAuthorization, Error>) async throws {
+        switch result {
+        case .success(let auth):
+            if let appleIDCredential = auth.credential as? ASAuthorizationAppleIDCredential {
+                let userIdentifier = appleIDCredential.user
+                let email = appleIDCredential.email ?? defaults.string(forKey: "appleEmail_\(userIdentifier)") ?? "\(userIdentifier)@apple.id"
+                
+                if let email = appleIDCredential.email {
+                    defaults.set(email, forKey: "appleEmail_\(userIdentifier)")
+                }
+
+                try await processSuccessfulLogin(email: email)
+            }
+        case .failure(let error):
+            throw error
         }
     }
 
