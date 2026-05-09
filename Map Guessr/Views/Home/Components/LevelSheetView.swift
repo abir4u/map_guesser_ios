@@ -58,17 +58,9 @@ struct LevelButton: View {
     var body: some View {
         Button(action: action) {
             HStack(spacing: 20) {
-                if icon == "googleLogo" {
-                    Image(icon)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 30, height: 30)
-                        .frame(width: 40)
-                } else {
-                    Image(systemName: icon)
+                Image(systemName: icon)
                         .font(.title)
                         .frame(width: 40)
-                }
                 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(title.uppercased())

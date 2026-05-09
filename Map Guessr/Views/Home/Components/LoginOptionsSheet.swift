@@ -39,18 +39,13 @@ struct LoginOptionsSheet: View {
                 .frame(height: 55)
                 .cornerRadius(15)
                 
-                LevelButton(
-                    title: "Google",
-                    subtitle: "Sign in with Google",
-                    icon: "googleLogo",
-                    color: .red
-                ) {
+                GoogleSignInButton {
                     Task {
                         await viewModel.loginAndNavigate(to: selectedMode) {
                             try await viewModel.authService.handleGoogleLogin()
                         }
+                        dismiss()
                     }
-                    dismiss()
                 }
             }
             .padding(.horizontal)
@@ -59,3 +54,33 @@ struct LoginOptionsSheet: View {
         .presentationDragIndicator(.visible)
     }
 }
+
+// MARK: - Subviews
+struct GoogleSignInButton: View {
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 8) {
+                Image("googleLogo")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 18, height: 18)
+                
+                Text("Sign in with Google")
+                    .font(.system(size: 21, weight: .medium, design: .default))
+            }
+            .frame(maxWidth: .infinity)
+            .frame(height: 55)
+            .background(Color.black)
+            .foregroundColor(.white)
+            .cornerRadius(15)
+            .overlay(
+                RoundedRectangle(cornerRadius: 15)
+                    .stroke(Color.white)
+            )
+        }
+        .buttonStyle(PlainButtonStyle())
+    }
+}
+
