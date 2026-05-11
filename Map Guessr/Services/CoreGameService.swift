@@ -20,7 +20,7 @@ class CoreGameService: ObservableObject {
     }
     
     func getCountryNames() async -> [String] {
-        guard let url = URL(string: APIConfig.Endpoints.countries) else { return [] }
+        guard let url = URL(string: AppConfig.Endpoints.countries) else { return [] }
         
         do {
             let response: CountryResponse = try await NetworkClient.request(url, session: self.session)
@@ -33,7 +33,7 @@ class CoreGameService: ObservableObject {
 
     func getCountryOutline(countryName: String) async -> Image? {
         guard let encodedName = countryName.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed),
-              let url = URL(string: "\(APIConfig.Endpoints.outline)/\(encodedName)") else {
+              let url = URL(string: "\(AppConfig.Endpoints.outline)/\(encodedName)") else {
             return nil
         }
         
@@ -53,7 +53,7 @@ class CoreGameService: ObservableObject {
     }
 
     func getClue(origin: String, destination: String) async -> DistanceResponse? {
-        var components = URLComponents(string: APIConfig.Endpoints.distance)
+        var components = URLComponents(string: AppConfig.Endpoints.distance)
         components?.queryItems = [
             URLQueryItem(name: "country_a", value: origin),
             URLQueryItem(name: "country_b", value: destination)

@@ -70,7 +70,7 @@ class AuthService: ObservableObject {
     func deleteAccount() async throws {
         try await GIDSignIn.sharedInstance.disconnect()
         
-        guard let email = userEmail, let url = URL(string: APIConfig.Endpoints.auth) else {
+        guard let email = userEmail, let url = URL(string: AppConfig.Endpoints.auth) else {
             throw NSError(domain: "AuthService", code: -3, userInfo: [NSLocalizedDescriptionKey: "Invalid User Session"])
         }
         
@@ -91,7 +91,7 @@ class AuthService: ObservableObject {
 
     
     private func authenticateWithBackend(email: String) async throws -> Bool {
-        guard let url = URL(string: APIConfig.Endpoints.auth) else { return false }
+        guard let url = URL(string: AppConfig.Endpoints.auth) else { return false }
         
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
