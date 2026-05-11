@@ -9,6 +9,7 @@ import SwiftUI
 
 struct HomeView: View {
     @StateObject private var viewModel = HomeViewModel()
+    @EnvironmentObject var launchService: LaunchService
     @State private var showingLevelSheet = false
     @State private var showingLogoutAlert = false
     @State private var activeSheet: GameMode = .none
@@ -120,6 +121,11 @@ struct HomeView: View {
             }
             .sheet(isPresented: $showingLoginOptions) {
                 LoginOptionsSheet(viewModel: viewModel, selectedMode: activeSheet)
+            }
+        }
+        .onAppear {
+            if let flags = launchService.flags {
+                viewModel.authenticateSoloPlay = flags.authenticate_soloplay
             }
         }
     }

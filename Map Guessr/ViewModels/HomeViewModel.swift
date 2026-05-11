@@ -21,6 +21,7 @@ class HomeViewModel: ObservableObject {
     @Published var authService: AuthService
     
     private var pendingMode: GameMode?
+    var authenticateSoloPlay: Bool = false
 
     var isLoggedIn: Bool {
         authService.isLoggedIn
@@ -31,14 +32,16 @@ class HomeViewModel: ObservableObject {
     }
 
     func handleButtonTap(mode: GameMode) {
-        if (authService.isLoggedIn || mode == .play(.Beginner)) {
+        let needsLogin = authenticateSoloPlay && !authService.isLoggedIn
+            
+        if needsLogin {
+            showingLoginOptions = true
+        } else {
             path.append(mode)
             showingLoginOptions = false
-        } else {
-            showingLoginOptions = true
         }
     }
-    
+
     func loginAndNavigate(to mode: GameMode, handleLoginOption: () async throws -> Void) async {
         isLoading = true
         errorMessage = nil
