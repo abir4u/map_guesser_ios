@@ -7,12 +7,16 @@
 
 import SwiftUI
 import ConfettiSwiftUI
+import StoreKit
 
 struct SinglePlayView: View {
     let level: Level
     @StateObject var viewModel: SinglePlayViewModel
     @State private var confettiCounter: Int = 0
     @FocusState private var isTextFieldFocused: Bool
+    @Environment(\.requestReview) var requestReview
+    
+    @AppStorage("winCount") private var winCount = 0
     
     @MainActor
     init(level: Level) {
@@ -88,6 +92,18 @@ struct SinglePlayView: View {
                 .interactiveDismissDisabled()
                 .onAppear {
                     confettiCounter += 1
+                    winCount += 1
+                    
+                    if winCount == 2 {
+#if !DEBUG
+                        Task {
+                            try? await Task.sleep(nanoseconds: 1_000_000_000)
+                            requestReview()
+                        }
+#else
+        print("DEBUG: Review prompt skipped (Release only). Current win count: \(winCount)")
+#endif
+                    }
                 }
             }
             .sheet(isPresented: $viewModel.isGameOver) {
