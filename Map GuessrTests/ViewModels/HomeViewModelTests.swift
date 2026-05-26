@@ -53,7 +53,7 @@ final class HomeViewModelTests: XCTestCase {
     func test_handleButtonTap_navigatesImmediatelyIfLoggedIn() {
         mockAuth.isLoggedIn = true
         
-        sut.handleButtonTap(mode: .play(.Beginner))
+        sut.handleButtonTap(mode: .play(.Amateur))
         
         XCTAssertEqual(sut.path.count, 1, "Should append to path immediately when logged in")
     }
@@ -62,7 +62,7 @@ final class HomeViewModelTests: XCTestCase {
     func test_handleButtonTap_triggersLoginIfNotLoggedIn() async {
         mockAuth.isLoggedIn = false
         
-        sut.handleButtonTap(mode: .play(.Beginner))
+        sut.handleButtonTap(mode: .play(.Amateur))
         
         try? await Task.sleep(nanoseconds: 100_000_000)
         XCTAssertTrue(mockAuth.loginCalled, "Should have triggered the login flow")
@@ -74,7 +74,7 @@ final class HomeViewModelTests: XCTestCase {
     func test_loginFlow_updatesLoadingStateAndPathOnSuccess() async {
         mockAuth.isLoggedIn = false
         
-        sut.handleButtonTap(mode: .play(.Beginner))
+        sut.handleButtonTap(mode: .play(.Amateur))
         
         try? await Task.sleep(nanoseconds: 200_000_000)
         
@@ -87,7 +87,7 @@ final class HomeViewModelTests: XCTestCase {
     func test_loginFlow_setsErrorMessageOnFailure() async {
         mockAuth.shouldFail = true
         
-        sut.handleButtonTap(mode: .play(.Beginner))
+        sut.handleButtonTap(mode: .play(.Amateur))
         
         try? await Task.sleep(nanoseconds: 200_000_000)
         
@@ -100,7 +100,7 @@ final class HomeViewModelTests: XCTestCase {
 
     @MainActor
     func test_logout_clearsPathAndAuth() {
-        sut.path.append(GameMode.play(.Beginner))
+        sut.path.append(GameMode.play(.Amateur))
         mockAuth.isLoggedIn = true
         
         sut.logout()

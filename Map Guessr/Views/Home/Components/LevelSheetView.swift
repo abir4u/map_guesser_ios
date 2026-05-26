@@ -28,7 +28,7 @@ struct LevelSheetView: View {
                         title: level.rawValue,
                         subtitle: level.subtitle,
                         icon: level.icon,
-                        color: level == .Beginner ? .appBrandBlue : .purple
+                        color: level.color
                     ) {
                         dismiss()
                         onSelect(level)
@@ -37,7 +37,7 @@ struct LevelSheetView: View {
             }
             .padding(.horizontal)
         }
-        .presentationDetents([.height(300)])
+        .presentationDetents([.height(400)])
         .presentationDragIndicator(.visible)
     }
     
