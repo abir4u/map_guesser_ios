@@ -31,33 +31,57 @@ struct SinglePlayView: View {
                     VStack(spacing: 20) {
                         PlayHeaderView(level: level, guessesLeft: viewModel.guessesLeft)
                         MapSectionView(viewModel: viewModel)
-
-                        VStack(alignment: .leading, spacing: 0) {
-                            TextField("Enter country name...", text: $viewModel.guessText)
-                                .textFieldStyle(.roundedBorder)
-                                .focused($isTextFieldFocused)
-                                .disableAutocorrection(true)
-                                .onChange(of: viewModel.guessText) { _, _ in
-                                    viewModel.filterCountries()
-                                    withAnimation {
-                                        proxy.scrollTo("inputArea", anchor: .top)
+                        
+                        if level == .Beginner {
+                            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
+                                ForEach(viewModel.options, id: \.self) { option in
+                                    Button(action: {
+                                        viewModel.guessText = option
+                                        Task {
+                                            await viewModel.submitGuess()
+                                        }
+                                    }) {
+                                        Text(option)
+                                            .font(.subheadline)
+                                            .fontWeight(.semibold)
+                                            .foregroundColor(.primary)
+                                            .frame(maxWidth: .infinity)
+                                            .padding()
+                                            .background(Color(.systemGray6))
+                                            .cornerRadius(10)
                                     }
                                 }
-                            
-                            if isTextFieldFocused {
-                                TextFieldPredictionList(
-                                    viewModel: viewModel,
-                                    isTextFieldFocused: $isTextFieldFocused
-                                )
                             }
-                        }
-                        .id("inputArea")
-                        .zIndex(1)
+                            .padding(.vertical, 10)
+                        } else {
+                            VStack(alignment: .leading, spacing: 0) {
+                                TextField("Enter country name...", text: $viewModel.guessText)
+                                    .textFieldStyle(.roundedBorder)
+                                    .focused($isTextFieldFocused)
+                                    .disableAutocorrection(true)
+                                    .onChange(of: viewModel.guessText) { _, _ in
+                                        viewModel.filterCountries()
+                                        withAnimation {
+                                            proxy.scrollTo("inputArea", anchor: .top)
+                                        }
+                                    }
+                                
+                                if isTextFieldFocused {
+                                    TextFieldPredictionList(
+                                        viewModel: viewModel,
+                                        isTextFieldFocused: $isTextFieldFocused
+                                    )
+                                }
+                            }
+                            .id("inputArea")
+                            .zIndex(1)
 
-                        GuessButton(
-                            viewModel: viewModel,
-                            isTextFieldFocused: $isTextFieldFocused
-                        )
+                            GuessButton(
+                                viewModel: viewModel,
+                                isTextFieldFocused: $isTextFieldFocused
+                            )
+                        }
+
                         LatestGuessResult(viewModel: viewModel)
                         GuessListView(guesses: viewModel.guesses)
                         

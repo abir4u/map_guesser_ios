@@ -21,6 +21,7 @@ class SinglePlayViewModel: ObservableObject {
     @Published var suggestions: [String] = []
     @Published var guessesLeft: Int = GUESS_LIMIT
     @Published var guesses: [Guess] = []
+    @Published var options: [String] = []
     
     @Published var isLoading = false
     @Published var errorMessage: String?
@@ -66,6 +67,9 @@ class SinglePlayViewModel: ObservableObject {
 
         if !repo.correctCountry.isEmpty && !repo.storedCountryList.isEmpty {
             await selectTargetAndFetchMap()
+            if level == .Beginner {
+                generateBeginnerOptions()
+            }
             return
         }
         
@@ -83,6 +87,31 @@ class SinglePlayViewModel: ObservableObject {
         
         repo.correctCountry = self.pickACountry()
         await selectTargetAndFetchMap()
+        if level == .Beginner {
+            generateBeginnerOptions()
+        }
+    }
+    
+    private func generateBeginnerOptions() {
+        guard level == .Beginner else { return }
+        
+        let correct = repo.correctCountry.isEmpty ? DEFAULT_COUNTRY : repo.correctCountry
+        
+        let otherCountries = repo.storedCountryList.filter { $0 != correct }
+        
+        var chosenOptions = Set<String>()
+        let countNeeded = min(5, otherCountries.count)
+        
+        while chosenOptions.count < countNeeded {
+            if let randomCountry = otherCountries.randomElement() {
+                chosenOptions.insert(randomCountry)
+            }
+        }
+        
+        var finalOptions = Array(chosenOptions)
+        finalOptions.append(correct)
+        
+        self.options = finalOptions.shuffled()
     }
     
     private func pickACountry() -> String {
@@ -116,6 +145,7 @@ class SinglePlayViewModel: ObservableObject {
         self.mapImage = nil
         self.guessesLeft = GUESS_LIMIT
         self.guesses = []
+        self.options = []
         self.isGameOver = false
         self.won = false
         self.timeElapsed = PRO_TIME_LIMIT
