@@ -33,26 +33,35 @@ struct SinglePlayView: View {
                         MapSectionView(viewModel: viewModel)
                         
                         if level == .Beginner {
-                            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
-                                ForEach(viewModel.options, id: \.self) { option in
-                                    Button(action: {
-                                        viewModel.guessText = option
-                                        Task {
-                                            await viewModel.submitGuess()
+                            VStack(spacing: 12) {
+                                Text("Guess the country on the map from the options below:")
+                                    .font(.subheadline)
+                                    .fontWeight(.medium)
+                                    .foregroundColor(.secondary)
+                                    .multilineTextAlignment(.center)
+                                    .padding(.top, 4)
+                                
+                                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
+                                    ForEach(viewModel.options, id: \.self) { option in
+                                        Button(action: {
+                                            viewModel.guessText = option
+                                            Task {
+                                                await viewModel.submitGuess()
+                                            }
+                                        }) {
+                                            Text(option)
+                                                .font(.subheadline)
+                                                .fontWeight(.semibold)
+                                                .foregroundColor(.primary)
+                                                .frame(maxWidth: .infinity)
+                                                .padding()
+                                                .background(Color(.systemGray6))
+                                                .cornerRadius(10)
                                         }
-                                    }) {
-                                        Text(option)
-                                            .font(.subheadline)
-                                            .fontWeight(.semibold)
-                                            .foregroundColor(.primary)
-                                            .frame(maxWidth: .infinity)
-                                            .padding()
-                                            .background(Color(.systemGray6))
-                                            .cornerRadius(10)
                                     }
                                 }
+                                .padding(.vertical, 10)
                             }
-                            .padding(.vertical, 10)
                         } else {
                             VStack(alignment: .leading, spacing: 0) {
                                 TextField("Enter country name...", text: $viewModel.guessText)
