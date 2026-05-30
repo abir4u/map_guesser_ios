@@ -122,6 +122,7 @@ struct SinglePlayView: View {
                     }
                 }
                 .presentationDetents([.medium])
+                .frame(maxWidth: .infinity, minHeight: 900)
                 .interactiveDismissDisabled()
                 .onAppear {
                     confettiCounter += 1
