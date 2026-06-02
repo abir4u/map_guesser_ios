@@ -99,18 +99,7 @@ struct HomeView: View {
             }
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    ShareLink(
-                        item: URL(string: "https://apps.apple.com/nz/app/map-guessr-challenge/id6764329692")!,
-                        subject: Text("Check out Map Guessr!"),
-                        message: Text("Try this awesome geography game!"),
-                        preview: SharePreview(
-                            "Map Guessr App",
-                            image: Image("map_guessr_image")
-                        )
-                    ) {
-                        Image(systemName: "square.and.arrow.up")
-                            .foregroundStyle(.blue)
-                    }
+                    AppShareButton()
                 }
                 if viewModel.isLoggedIn {
                     ToolbarItem(placement: .navigationBarTrailing) {
