@@ -69,6 +69,7 @@
 			files = (
 				BAB1A9172F982F78000A9F62 /* ConfettiSwiftUI in Frameworks */,
 				BAF6346E2F7F44AC00037F52 /* GoogleSignIn in Frameworks */,
+				BAAB4C3E2FD12D1A00BDF619 /* FirebaseAnalytics in Frameworks */,
 				BAF634702F7F44AC00037F52 /* GoogleSignInSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -135,6 +136,7 @@
 				BAF6346D2F7F44AC00037F52 /* GoogleSignIn */,
 				BAF6346F2F7F44AC00037F52 /* GoogleSignInSwift */,
 				BAB1A9162F982F78000A9F62 /* ConfettiSwiftUI */,
+				BAAB4C3D2FD12D1A00BDF619 /* FirebaseAnalytics */,
 			);
 			productName = "Map Guessr";
 			productReference = BAF634402F7F387F00037F52 /* Map Guessr.app */;
@@ -221,6 +223,7 @@
 			packageReferences = (
 				BAF6346C2F7F44AC00037F52 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
 				BAB1A9152F982F78000A9F62 /* XCRemoteSwiftPackageReference "ConfettiSwiftUI" */,
+				BAAB4C3C2FD12D1A00BDF619 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = BAF634412F7F387F00037F52 /* Products */;
@@ -666,6 +669,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		BAAB4C3C2FD12D1A00BDF619 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.14.0;
+			};
+		};
 		BAB1A9152F982F78000A9F62 /* XCRemoteSwiftPackageReference "ConfettiSwiftUI" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/simibac/ConfettiSwiftUI";
@@ -685,6 +696,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		BAAB4C3D2FD12D1A00BDF619 /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BAAB4C3C2FD12D1A00BDF619 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
 		BAB1A9162F982F78000A9F62 /* ConfettiSwiftUI */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = BAB1A9152F982F78000A9F62 /* XCRemoteSwiftPackageReference "ConfettiSwiftUI" */;
