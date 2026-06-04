@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		BAAB4C392FD11BE500BDF619 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BAAB4C382FD11BE500BDF619 /* GoogleService-Info.plist */; };
+		BAAB4C3A2FD11BE500BDF619 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BAAB4C382FD11BE500BDF619 /* GoogleService-Info.plist */; };
+		BAAB4C3B2FD11BE500BDF619 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BAAB4C382FD11BE500BDF619 /* GoogleService-Info.plist */; };
+		BAAB4C3E2FD12D1A00BDF619 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = BAAB4C3D2FD12D1A00BDF619 /* FirebaseAnalytics */; };
 		BAB1A9172F982F78000A9F62 /* ConfettiSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = BAB1A9162F982F78000A9F62 /* ConfettiSwiftUI */; };
 		BAE816AC2FA6CD4000B0B239 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = BAE816862FA6CD4000B0B239 /* PrivacyInfo.xcprivacy */; };
 		BAE816CE2FA6CD4000B0B239 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = BAE816862FA6CD4000B0B239 /* PrivacyInfo.xcprivacy */; };
@@ -33,6 +37,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		BAAB4C382FD11BE500BDF619 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		BAE816862FA6CD4000B0B239 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		BAF634402F7F387F00037F52 /* Map Guessr.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Map Guessr.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BAF6344D2F7F388200037F52 /* Map GuessrTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Map GuessrTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -93,6 +98,7 @@
 				BAF6345A2F7F388200037F52 /* Map GuessrUITests */,
 				BAF634412F7F387F00037F52 /* Products */,
 				BAE816862FA6CD4000B0B239 /* PrivacyInfo.xcprivacy */,
+				BAAB4C382FD11BE500BDF619 /* GoogleService-Info.plist */,
 			);
 			sourceTree = "<group>";
 		};
@@ -234,6 +240,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BAE816AC2FA6CD4000B0B239 /* PrivacyInfo.xcprivacy in Resources */,
+				BAAB4C3B2FD11BE500BDF619 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -242,6 +249,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BAE816CE2FA6CD4000B0B239 /* PrivacyInfo.xcprivacy in Resources */,
+				BAAB4C3A2FD11BE500BDF619 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -250,6 +258,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BAE816CF2FA6CD4000B0B239 /* PrivacyInfo.xcprivacy in Resources */,
+				BAAB4C392FD11BE500BDF619 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
