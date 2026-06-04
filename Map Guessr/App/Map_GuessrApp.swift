@@ -7,11 +7,21 @@
 
 import SwiftUI
 import GoogleSignIn
+import FirebaseCore
+
+class AppDelegate: NSObject, UIApplicationDelegate {
+  func application(_ application: UIApplication,
+                   didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+      FirebaseApp.configure()
+      return true
+  }
+}
 
 @main
 struct Map_GuessrApp: App {
     @StateObject private var launchService = LaunchService()
     @State private var isAppReady = false
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     
     init() {
             if ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] == nil {
