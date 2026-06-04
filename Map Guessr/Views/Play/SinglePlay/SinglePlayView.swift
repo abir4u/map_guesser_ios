@@ -45,6 +45,7 @@ struct SinglePlayView: View {
                                     ForEach(viewModel.options, id: \.self) { option in
                                         GridOptionButton(title: option) {
                                             viewModel.guessText = option
+                                            AppAnalytics.shared.logEvent(.optionTapped)
                                             Task { await viewModel.submitGuess() }
                                         }
                                     }
@@ -108,6 +109,7 @@ struct SinglePlayView: View {
                     Task {
                         await viewModel.setupGame()
                         viewModel.won = false
+                        AppAnalytics.shared.logEvent(.winSheetContinueTapped)
                     }
                 }
                 .presentationDetents([.medium])
@@ -132,6 +134,7 @@ struct SinglePlayView: View {
             .sheet(isPresented: $viewModel.isGameOver) {
                 LossSheetView(viewModel: viewModel, onContinue: {
                     Task { await viewModel.setupGame() }
+                    AppAnalytics.shared.logEvent(.lossSheetContinueTapped)
                 })
                 .presentationDetents([.height(560)])
             }
@@ -143,5 +146,8 @@ struct SinglePlayView: View {
         }
         .animation(.default, value: viewModel.isLoading)
         .confettiCannon(trigger: $confettiCounter, num: 50, radius: 500.0, hapticFeedback: true)
+        .onAppear {
+            AppAnalytics.shared.logScreen(.play)
+        }
     }
 }

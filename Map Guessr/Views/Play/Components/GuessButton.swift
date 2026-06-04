@@ -14,6 +14,7 @@ struct GuessButton: View {
     var body: some View {
         Button(action: {
             isTextFieldFocused.wrappedValue = false
+            AppAnalytics.shared.logEvent(.guessButtonTapped)
             Task { await viewModel.submitGuess() }
         }) {
             Text("GUESS").bold().frame(maxWidth: .infinity).padding()
