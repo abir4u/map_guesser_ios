@@ -34,7 +34,7 @@ struct AccountView: View {
                     Button {
                         viewModel.logout()
                         dismiss()
-                        AppAnalytics.shared.logEvent(event: .logoutTapped)
+                        AppAnalytics.shared.logEvent(.logoutTapped)
                     } label: {
                         Label("Logout", systemImage: "rectangle.portrait.and.arrow.right")
                     }
