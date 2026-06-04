@@ -34,6 +34,7 @@ struct AccountView: View {
                     Button {
                         viewModel.logout()
                         dismiss()
+                        AppAnalytics.shared.logEvent(event: .logoutTapped)
                     } label: {
                         Label("Logout", systemImage: "rectangle.portrait.and.arrow.right")
                     }
@@ -91,8 +92,9 @@ struct AccountView: View {
         }
         .navigationTitle("Account")
         .navigationBarTitleDisplayMode(.inline)
-        .alert("Are you sure?", isPresented: $showingDeleteConfirmation) {
+        .alert("Sure you want to delete your account?", isPresented: $showingDeleteConfirmation) {
             Button("Yes", role: .destructive) {
+                AppAnalytics.shared.logEvent(.deleteAccountTapped)
                 Task { await viewModel.deleteUserAccount() }
             }
             Button("No", role: .cancel) { }
@@ -105,6 +107,9 @@ struct AccountView: View {
             }
         } message: {
             Text("Your account and associated data have been successfully removed.")
+        }
+        .onAppear {
+            AppAnalytics.shared.logScreen(.account)
         }
     }
 }
