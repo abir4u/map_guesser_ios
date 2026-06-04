@@ -43,20 +43,9 @@ struct SinglePlayView: View {
                                 
                                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
                                     ForEach(viewModel.options, id: \.self) { option in
-                                        Button(action: {
+                                        GridOptionButton(title: option) {
                                             viewModel.guessText = option
-                                            Task {
-                                                await viewModel.submitGuess()
-                                            }
-                                        }) {
-                                            Text(option)
-                                                .font(.subheadline)
-                                                .fontWeight(.semibold)
-                                                .foregroundColor(.primary)
-                                                .frame(maxWidth: .infinity)
-                                                .padding()
-                                                .background(Color(.systemGray6))
-                                                .cornerRadius(10)
+                                            Task { await viewModel.submitGuess() }
                                         }
                                     }
                                 }
