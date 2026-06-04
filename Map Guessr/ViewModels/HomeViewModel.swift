@@ -39,6 +39,19 @@ class HomeViewModel: ObservableObject {
         } else {
             path.append(mode)
             showingLoginOptions = false
+            triggerLevelTapAnalytics(for: mode)
+        }
+    }
+    
+    func triggerLevelTapAnalytics(for mode: GameMode) {
+        if mode == .play(.Beginner) {
+            AppAnalytics.shared.logEvent(.beginnerTapped)
+        } else if mode == .play(.Amateur) {
+            AppAnalytics.shared.logEvent(.amateurTapped)
+        } else if mode == .play(.Pro) {
+            AppAnalytics.shared.logEvent(.proTapped)
+        } else {
+            AppAnalytics.shared.logEvent(.levelTapError)
         }
     }
 
@@ -49,6 +62,7 @@ class HomeViewModel: ObservableObject {
         do {
             try await handleLoginOption()
             path.append(mode)
+            triggerLevelTapAnalytics(for: mode)
             pendingMode = nil
         } catch {
             errorMessage = error.localizedDescription

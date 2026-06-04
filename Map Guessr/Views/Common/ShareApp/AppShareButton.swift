@@ -14,6 +14,7 @@ struct AppShareButton: View {
         var body: some View {
             Button {
                 openSmartShareSheet()
+                AppAnalytics.shared.logEvent(.shareTapped)
             } label: {
                 if isToolbarItem {
                     Image(systemName: "square.and.arrow.up")

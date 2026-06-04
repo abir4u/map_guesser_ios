@@ -130,6 +130,7 @@ struct HomeView: View {
             if let flags = launchService.flags {
                 viewModel.authenticateSoloPlay = flags.authenticate_soloplay
             }
+            AppAnalytics.shared.logScreen(.home)
         }
     }
 }
