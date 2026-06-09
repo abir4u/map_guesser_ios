@@ -17,6 +17,10 @@ enum AppScreen: String {
 }
 
 enum AppEvent {
+    // --- Login ---
+    case googleLogin(isSuccessful: Bool)
+    case appleLogin(isSuccessful: Bool)
+    
     // --- Home Screen Events ---
     case beginnerTapped
     case amateurTapped
@@ -36,6 +40,12 @@ enum AppEvent {
     
     var details: (name: String, parameters: [String: Any]?) {
         switch self {
+        // --- Login ---
+        case .googleLogin(let isSuccessful):
+            return ("google_login", ["is_successful": isSuccessful])
+        case .appleLogin(let isSuccessful):
+            return ("apple_login", ["is_successful": isSuccessful])
+
         // --- Home ---
         case .beginnerTapped:
             return ("beginner_tapped", nil)

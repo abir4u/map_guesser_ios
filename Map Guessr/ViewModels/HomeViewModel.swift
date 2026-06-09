@@ -46,18 +46,28 @@ class HomeViewModel: ObservableObject {
         }
     }
     
-    func loginAndRefreshPage(handleLoginOption: () async throws -> Void) async {
+    func loginAndRefreshPage(via: String, handleLoginOption: () async throws -> Void) async {
         isLoading = true
         errorMessage = nil
         
         do {
             try await handleLoginOption()
             objectWillChange.send()
+            setLoginStatusAnalytics(via: via, isSuccessful: true)
         } catch {
             errorMessage = error.localizedDescription
+            setLoginStatusAnalytics(via: via, isSuccessful: false)
         }
         
         isLoading = false
+    }
+    
+    func setLoginStatusAnalytics(via: String, isSuccessful: Bool) {
+        AppAnalytics.shared.logEvent(
+            via == "Google"
+            ? .googleLogin(isSuccessful: isSuccessful)
+            : .appleLogin(isSuccessful: isSuccessful)
+        )
     }
     
     func logout() {

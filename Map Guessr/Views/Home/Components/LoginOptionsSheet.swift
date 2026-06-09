@@ -29,7 +29,7 @@ struct LoginOptionsSheet: View {
                     request.requestedScopes = [.email, .fullName]
                 } onCompletion: { result in
                     Task {
-                        await viewModel.loginAndRefreshPage() {
+                        await viewModel.loginAndRefreshPage(via: "Apple") {
                             try await viewModel.authService.handleAppleLogin(result: result)
                         }
                         dismiss()
@@ -41,7 +41,7 @@ struct LoginOptionsSheet: View {
                 
                 GoogleSignInButton {
                     Task {
-                        await viewModel.loginAndRefreshPage() {
+                        await viewModel.loginAndRefreshPage(via: "Google") {
                             try await viewModel.authService.handleGoogleLogin()
                         }
                         dismiss()
