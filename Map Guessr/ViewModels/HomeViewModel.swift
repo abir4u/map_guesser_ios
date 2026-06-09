@@ -73,6 +73,7 @@ class HomeViewModel: ObservableObject {
     func logout() {
         authService.logout()
         path = NavigationPath()
+        AppAnalytics.shared.logEvent(.logoutTapped)
     }
     
     func deleteUserAccount() async {
@@ -82,6 +83,7 @@ class HomeViewModel: ObservableObject {
         do {
             try await authService.deleteAccount()
             showingDeleteSuccess = true
+            AppAnalytics.shared.logEvent(.deleteAccountTapped)
         } catch {
             errorMessage = error.localizedDescription
         }
