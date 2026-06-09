@@ -101,12 +101,24 @@ struct HomeView: View {
                 ToolbarItem(placement: .navigationBarLeading) {
                     AppShareButton()
                 }
-                if viewModel.isLoggedIn {
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        NavigationLink(destination: AccountView(viewModel: viewModel)) {
-                            Image(systemName: "person.circle")
-                                .symbolRenderingMode(.palette)
-                                .foregroundStyle(.blue)
+                if launchService.flags?.authenticate_soloplay ?? false {
+                    if viewModel.isLoggedIn {
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            NavigationLink(destination: AccountView(viewModel: viewModel)) {
+                                Image(systemName: "person.crop.circle")
+                                    .symbolRenderingMode(.palette)
+                                    .foregroundStyle(.blue)
+                            }
+                        }
+                    } else {
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            Button {
+                                showingLoginOptions = true
+                            } label: {
+                                Image(systemName: "person.crop.circle.badge.exclamationmark.fill")
+                                    .symbolRenderingMode(.palette)
+                                    .foregroundStyle(.red)
+                            }
                         }
                     }
                 }
@@ -117,7 +129,6 @@ struct HomeView: View {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                         activeSheet = .play(selectedLevel)
                         viewModel.handleButtonTap(mode: activeSheet)
-                        showingLoginOptions = viewModel.showingLoginOptions
                     }
                     
                 }
@@ -127,9 +138,6 @@ struct HomeView: View {
             }
         }
         .onAppear {
-            if let flags = launchService.flags {
-                viewModel.authenticateSoloPlay = flags.authenticate_soloplay
-            }
             AppAnalytics.shared.logScreen(.home)
         }
     }

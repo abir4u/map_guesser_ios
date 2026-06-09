@@ -10,7 +10,6 @@ internal import Combine
 
 struct FeatureFlags: Decodable {
     let authenticate_soloplay: Bool
-    let multiplayer_mode: Bool
 }
 
 class LaunchService: ObservableObject {
@@ -18,12 +17,11 @@ class LaunchService: ObservableObject {
     
     private let defaultFlags = FeatureFlags(
         authenticate_soloplay: false,
-        multiplayer_mode: false,
     )
 
     @MainActor
     func fetchFeatureFlags() async {
-        let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0"
+        let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
         let environment = AppConfig.environmentName
         
         let urlString = "\(AppConfig.Endpoints.features)?version=\(version)&environment=\(environment)"

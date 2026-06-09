@@ -16,12 +16,10 @@ class HomeViewModel: ObservableObject {
     @Published var errorMessage: String?
     @Published var isLoading = false
     @Published var showingDeleteSuccess = false
-    @Published var showingLoginOptions = false
     
     @Published var authService: AuthService
     
     private var pendingMode: GameMode?
-    var authenticateSoloPlay: Bool = false
 
     var isLoggedIn: Bool {
         authService.isLoggedIn
@@ -32,15 +30,8 @@ class HomeViewModel: ObservableObject {
     }
 
     func handleButtonTap(mode: GameMode) {
-        let needsLogin = authenticateSoloPlay && !authService.isLoggedIn
-            
-        if needsLogin {
-            showingLoginOptions = true
-        } else {
-            path.append(mode)
-            showingLoginOptions = false
-            triggerLevelTapAnalytics(for: mode)
-        }
+        path.append(mode)
+        triggerLevelTapAnalytics(for: mode)
     }
     
     func triggerLevelTapAnalytics(for mode: GameMode) {
@@ -54,16 +45,14 @@ class HomeViewModel: ObservableObject {
             AppAnalytics.shared.logEvent(.levelTapError)
         }
     }
-
-    func loginAndNavigate(to mode: GameMode, handleLoginOption: () async throws -> Void) async {
+    
+    func loginAndRefreshPage(handleLoginOption: () async throws -> Void) async {
         isLoading = true
         errorMessage = nil
         
         do {
             try await handleLoginOption()
-            path.append(mode)
-            triggerLevelTapAnalytics(for: mode)
-            pendingMode = nil
+            objectWillChange.send()
         } catch {
             errorMessage = error.localizedDescription
         }
