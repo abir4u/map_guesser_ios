@@ -35,6 +35,5 @@ enum Level: String, CaseIterable, Hashable {
         case .Amateur: return .orange
         case .Pro: return .purple
         }
-
     }
 }
