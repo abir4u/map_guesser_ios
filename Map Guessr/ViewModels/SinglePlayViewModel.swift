@@ -32,7 +32,7 @@ class SinglePlayViewModel: ObservableObject {
     let level: Level
     private var timerCancellable: AnyCancellable?
     private let timerProvider: TimerProvider
-    private let repo = GameRepository()
+    private let repo: GameRepository
     private let gameService = CoreGameService()
     
     var formattedTime: String {
@@ -46,6 +46,7 @@ class SinglePlayViewModel: ObservableObject {
         self.timerProvider = timerProvider ?? GameTimerProvider()
         self.isGameOver = false
         self.won = false
+        repo = GameRepository(level: level)
         if (repo.guessesLeft == 0) {
             repo.guessesLeft = GUESS_LIMIT
         }
