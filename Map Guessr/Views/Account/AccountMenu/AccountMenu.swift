@@ -11,6 +11,7 @@ import SwiftUI
 struct AccountMenu: View {
     @ObservedObject var viewModel: HomeViewModel
     @Environment(\.dismiss) var dismiss
+    @EnvironmentObject var launchService: LaunchService
     
     @State private var showingDeleteConfirmation = false
     
@@ -29,21 +30,33 @@ struct AccountMenu: View {
                         .font(.caption)
                         .padding(.horizontal)
                 }
-                
+                                
                 List {
-                    Button {
-                        viewModel.logout()
-                        dismiss()
-                        AppAnalytics.shared.logEvent(.logoutTapped)
-                    } label: {
-                        Label("Logout", systemImage: "rectangle.portrait.and.arrow.right")
+                    if launchService.flags?.my_records == true {
+                        Section {
+                            NavigationLink {
+                                MyRecordsView()
+                            } label: {
+                                Label("My Records", systemImage: "chart.xyaxis.line")
+                            }
+                        }
                     }
                     
-                    Button(role: .destructive) {
-                        showingDeleteConfirmation = true
-                    } label: {
-                        Label("Delete Account", systemImage: "trash")
-                            .foregroundStyle(.red)
+                    Section {
+                        Button {
+                            viewModel.logout()
+                            dismiss()
+                            AppAnalytics.shared.logEvent(.logoutTapped)
+                        } label: {
+                            Label("Logout", systemImage: "rectangle.portrait.and.arrow.right")
+                        }
+                        
+                        Button(role: .destructive) {
+                            showingDeleteConfirmation = true
+                        } label: {
+                            Label("Delete Account", systemImage: "trash")
+                                .foregroundStyle(.red)
+                        }
                     }
                 }
                 .listStyle(.insetGrouped)

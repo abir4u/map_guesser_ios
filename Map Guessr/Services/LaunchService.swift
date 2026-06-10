@@ -10,6 +10,7 @@ internal import Combine
 
 struct FeatureFlags: Decodable {
     let authenticate_soloplay: Bool
+    let my_records: Bool
 }
 
 class LaunchService: ObservableObject {
@@ -17,6 +18,7 @@ class LaunchService: ObservableObject {
     
     private let defaultFlags = FeatureFlags(
         authenticate_soloplay: false,
+        my_records: false,
     )
 
     @MainActor
