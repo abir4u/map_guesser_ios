@@ -44,7 +44,7 @@ struct QuitAlertModifier: ViewModifier {
                     dismiss()
                 }
             } message: {
-                Text("Sure to quit? Your progress will be lost.")
+                Text("Sure to quit? Your progress will be lost and it may affect your records.")
             }
     }
 }

@@ -151,6 +151,29 @@ class SinglePlayViewModel: ObservableObject {
         self.won = false
         self.timeElapsed = PRO_TIME_LIMIT
     }
+    
+    func registerGameAsLost() async {
+        let email = UserDefaults.standard.string(forKey: "userEmail") ?? ""
+        let levelNum = switch level {
+            case .Beginner: 1
+            case .Amateur: 2
+            case .Pro: 3
+        }
+        
+        print("*** Parameters ***")
+        print(repo.correctCountry)
+        print(email)
+        print(levelNum)
+                
+        let _ = await gameService.evaluateResult(
+            guessedCountry: "New Garia",
+            correctCountry: repo.correctCountry,
+            email: email,
+            level: levelNum,
+            guessesLeft: 0,
+            timeLeft: 0
+        )
+    }
 
     func submitGuess() async {
         let usersResponse = guessText.trimmingCharacters(in: .whitespaces)

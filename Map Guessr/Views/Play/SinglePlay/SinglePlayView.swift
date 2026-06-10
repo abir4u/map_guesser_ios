@@ -103,7 +103,12 @@ struct SinglePlayView: View {
             .dismissKeyboardOnTap()
             .disabled(viewModel.isLoading)
             .blur(radius: viewModel.isLoading ? 2 : 0)
-            .confirmQuitOnBack { viewModel.resetGame() }
+            .confirmQuitOnBack {
+                Task {
+                    await viewModel.registerGameAsLost()
+                    viewModel.resetGame()
+                }
+            }
             .sheet(isPresented: $viewModel.won) {
                 WinSheetView(correctCountry: viewModel.getCorrectCountry()) {
                     Task {
