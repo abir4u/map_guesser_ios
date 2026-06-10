@@ -6,12 +6,15 @@ how far away the guessed country is from the actual country and in what directio
 ## Game Features
 
 - Single Play (Deployed)
-- Play with Friends (Work in progress)
+- My Records (Work in Progress)
+- Badges and Account Personalisation (Backlog)
+- Play with Friends (Backlog)
 - Play Online (Backlog)
 
 ## Authentication
 
 - Google OAuth
+- Apple OAuth
 
 ## Tech Stack
 
@@ -23,6 +26,7 @@ how far away the guessed country is from the actual country and in what directio
 ## Immediate Next Steps
 
 - Fix High Priority Bugs
+- Implement My Records, and then Badges and Account Personalisation
 - Discovery of Play with Friends feature - Why will anyone want to play this?
 - Deliver Single Play feature from Android app (separate repo)
 
