@@ -169,7 +169,23 @@ class SinglePlayViewModel: ObservableObject {
             self.lastDistance = currentGuess
             self.lastDirection = ""
         } else {
-            if let res = await gameService.getClue(origin: currentGuess, destination: repo.correctCountry) {
+            let email = UserDefaults.standard.string(forKey: "userEmail") ?? ""
+            let levelNum = switch level {
+                case .Beginner: 1
+                case .Amateur: 2
+                case .Pro: 3
+            }
+            
+            let remainingTime: Int = (level == .Pro) ? max(0, self.timeElapsed) : 0
+            
+            if let res = await gameService.evaluateResult(
+                guessedCountry: currentGuess,
+                correctCountry: repo.correctCountry,
+                email: email,
+                level: levelNum,
+                guessesLeft: repo.guessesLeft - 1,
+                timeLeft: remainingTime
+            ) {
                 if (Int(res.distance_km) == 0 && Int(res.bearing_degrees) == 0) {
                     won = true
                     repo.won = true

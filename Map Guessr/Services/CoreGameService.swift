@@ -52,30 +52,13 @@ class CoreGameService: ObservableObject {
         }
     }
 
-    func getClue(origin: String, destination: String) async -> DistanceResponse? {
-        var components = URLComponents(string: AppConfig.Endpoints.distance)
-        components?.queryItems = [
-            URLQueryItem(name: "country_a", value: origin),
-            URLQueryItem(name: "country_b", value: destination)
-        ]
-        
-        guard let url = components?.url else { return nil }
-        
-        do {
-            return try await NetworkClient.request(url, session: self.session)
-        } catch {
-            print("Error fetching clue: \(error)")
-            return nil
-        }
-    }
-    
     func evaluateResult(
         guessedCountry: String,
         correctCountry: String,
         email: String,
         level: Int,
         guessesLeft: Int,
-        timeLeft: Float
+        timeLeft: Int
     ) async -> DistanceResponse? {
         guard let url = URL(string: AppConfig.Endpoints.evaluate) else {
             return nil
@@ -92,7 +75,7 @@ class CoreGameService: ObservableObject {
             "email": email,
             "level": level,
             "guesses_left": guessesLeft,
-            "time_left": Int(timeLeft)
+            "time_left": timeLeft
         ]
         
         do {
