@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct AccountView: View {
+struct AccountMenu: View {
     @ObservedObject var viewModel: HomeViewModel
     @Environment(\.dismiss) var dismiss
     

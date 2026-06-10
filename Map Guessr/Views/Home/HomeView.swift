@@ -104,7 +104,7 @@ struct HomeView: View {
                 if launchService.flags?.authenticate_soloplay ?? false {
                     if viewModel.isLoggedIn {
                         ToolbarItem(placement: .navigationBarTrailing) {
-                            NavigationLink(destination: AccountView(viewModel: viewModel)) {
+                            NavigationLink(destination: AccountMenu(viewModel: viewModel)) {
                                 Image(systemName: "person.crop.circle")
                                     .symbolRenderingMode(.palette)
                                     .foregroundStyle(.blue)
