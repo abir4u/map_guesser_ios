@@ -68,4 +68,54 @@ class CoreGameService: ObservableObject {
             return nil
         }
     }
+    
+    func evaluateResult(
+        guessedCountry: String,
+        correctCountry: String,
+        email: String,
+        level: Int,
+        guessesLeft: Int,
+        timeLeft: Float
+    ) async -> DistanceResponse? {
+        guard let url = URL(string: AppConfig.Endpoints.evaluate) else {
+            return nil
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
+
+        let body: [String: Any] = [
+            "guessed_country": guessedCountry,
+            "correct_country": correctCountry,
+            "email": email,
+            "level": level,
+            "guesses_left": guessesLeft,
+            "time_left": Int(timeLeft)
+        ]
+        
+        do {
+            request.httpBody = try JSONSerialization.data(withJSONObject: body)
+        } catch {
+            print("Encoding error: \(error)")
+            return nil
+        }
+        
+        do {
+            let (data, response) = try await self.session.data(for: request)
+            
+            guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+                if let errorString = String(data: data, encoding: .utf8) {
+                    print("Server error response: \(errorString)")
+                }
+                return nil
+            }
+            
+            return try JSONDecoder().decode(DistanceResponse.self, from: data)
+        } catch {
+            print("Network or parsing error: \(error)")
+            return nil
+        }
+    }
 }
