@@ -11,6 +11,7 @@ internal import Combine
 let PRO_TIME_LIMIT = 30
 let GUESS_LIMIT = 5
 let DEFAULT_COUNTRY = "New Zealand"
+let DEFAULT_WORST_ACCURACY = 20000
 
 @MainActor
 class SinglePlayViewModel: ObservableObject {
@@ -40,6 +41,33 @@ class SinglePlayViewModel: ObservableObject {
         let seconds = max(0, timeElapsed) % 60
         return String(format: "%02d:%02d", minutes, seconds)
     }
+    
+    var totalTimeLapse: Int {
+        var notAPro = 0
+        
+        if level == .Pro {
+            let isTimeListInSync = repo.guessesLeft + repo.timeLapseList.count
+            guard isTimeListInSync == GUESS_LIMIT else {
+                self.errorMessage = "An internal error has occurred with the game."
+                return -1
+            }
+
+            let currentSum = repo.timeLapseList.reduce(0, +)
+            let count = repo.timeLapseList.count
+            
+            if count == GUESS_LIMIT {
+                return currentSum
+            } else if count < GUESS_LIMIT {
+                let missingItems = GUESS_LIMIT - count
+                return currentSum + (PRO_TIME_LIMIT * missingItems)
+            } else {
+                self.errorMessage = "An internal error has occurred with the game."
+                return -1
+            }
+        }
+        
+        return notAPro
+    }
 
     init(level: Level, timerProvider: TimerProvider? = nil) {
         self.level = level
@@ -50,6 +78,9 @@ class SinglePlayViewModel: ObservableObject {
         if (repo.guessesLeft == 0) {
             repo.guessesLeft = GUESS_LIMIT
             repo.distanceAccuracyList = []
+            if level == .Pro {
+                repo.timeLapseList = []
+            }
         }
         self.guessesLeft = repo.guessesLeft
         Task { await setupGame() }
@@ -67,6 +98,7 @@ class SinglePlayViewModel: ObservableObject {
 
         self.guessesLeft = (repo.guessesLeft == 0) ? GUESS_LIMIT : repo.guessesLeft
         repo.distanceAccuracyList = (repo.guessesLeft == 0) ? [] : repo.distanceAccuracyList
+        repo.timeLapseList = (repo.guessesLeft == 0 && level == .Pro) ? [] : repo.timeLapseList
 
         if !repo.correctCountry.isEmpty && !repo.storedCountryList.isEmpty {
             await selectTargetAndFetchMap()
@@ -156,26 +188,26 @@ class SinglePlayViewModel: ObservableObject {
     
     func registerGameAsLost() async {
         let email = UserDefaults.standard.string(forKey: "userEmail") ?? ""
-        let totalExpectedGuesses = repo.guessesLeft + repo.distanceAccuracyList.count
-        guard totalExpectedGuesses == GUESS_LIMIT else {
+        let isDistanceListInSync = repo.guessesLeft + repo.distanceAccuracyList.count
+        guard isDistanceListInSync == GUESS_LIMIT else {
             self.errorMessage = "An internal error has occurred with the game. Please try again."
             return
         }
-        
+                
         let levelNum = switch level {
             case .Beginner: 1
             case .Amateur:  2
             case .Pro:      3
         }
         
-        let accuracyInKm = repo.distanceAccuracyList.min() ?? 20000
-        
+        let accuracyInKm = repo.distanceAccuracyList.min() ?? DEFAULT_WORST_ACCURACY
+                
         let _ = await gameService.evaluateResult(
             email: email,
             level: levelNum,
             guessesLeft: 0,
             accuracyInKm: accuracyInKm,
-            timeLapseInGame: 0 // TODO: This needs to be the sum of the time lapses in seconds for the previous guesses in this game + (PRO_TIME_LIMIT * guessesLeft from userDefaults)
+            timeLapseInGame: totalTimeLapse
         )
     }
 
@@ -184,6 +216,10 @@ class SinglePlayViewModel: ObservableObject {
         guard !usersResponse.isEmpty else { return }
         let currentGuess = identifyCountry(named: usersResponse)
         
+        if level == .Pro {
+            repo.appendTimeLapse(self.timeElapsed)
+            print(self.timeElapsed)
+        }
         stopTimer()
         isLoading = true
         defer {
@@ -199,7 +235,7 @@ class SinglePlayViewModel: ObservableObject {
         if currentGuess == "Invalid country name" || currentGuess == "Time up" {
             self.lastDistance = currentGuess
             self.lastDirection = ""
-            let accuracyInKm = repo.distanceAccuracyList.min() ?? 20000
+            let accuracyInKm = repo.distanceAccuracyList.min() ?? DEFAULT_WORST_ACCURACY
             repo.appendDistanceAccuracy(accuracyInKm)
         } else {
             if let res = await gameService.getClue(origin: currentGuess, destination: repo.correctCountry) {
@@ -217,8 +253,7 @@ class SinglePlayViewModel: ObservableObject {
             } else {
                 self.lastDistance = "Unknown distance"
                 self.lastDirection = ""
-                // Since this is an internal error scenario and is not the fault of the player, add the best accuracy in km which is not 0. In Int, that value has to be 1.
-                repo.appendDistanceAccuracy(1)
+                repo.appendDistanceAccuracy(-1)
             }
         }
                 
