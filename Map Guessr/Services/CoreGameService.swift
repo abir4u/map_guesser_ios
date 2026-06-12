@@ -73,7 +73,7 @@ class CoreGameService: ObservableObject {
         email: String,
         level: Int,
         guessesLeft: Int,
-        accuracyInKm: Float,
+        accuracyInKm: Int,
         timeLapseInGame: Int
     ) async -> DistanceResponse? {
         guard let url = URL(string: AppConfig.Endpoints.evaluate) else {

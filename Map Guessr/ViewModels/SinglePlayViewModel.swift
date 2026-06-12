@@ -49,6 +49,7 @@ class SinglePlayViewModel: ObservableObject {
         repo = GameRepository(level: level)
         if (repo.guessesLeft == 0) {
             repo.guessesLeft = GUESS_LIMIT
+            repo.distanceAccuracyList = []
         }
         self.guessesLeft = repo.guessesLeft
         Task { await setupGame() }
@@ -65,6 +66,7 @@ class SinglePlayViewModel: ObservableObject {
         self.errorMessage = nil
 
         self.guessesLeft = (repo.guessesLeft == 0) ? GUESS_LIMIT : repo.guessesLeft
+        repo.distanceAccuracyList = (repo.guessesLeft == 0) ? [] : repo.distanceAccuracyList
 
         if !repo.correctCountry.isEmpty && !repo.storedCountryList.isEmpty {
             await selectTargetAndFetchMap()
@@ -154,23 +156,26 @@ class SinglePlayViewModel: ObservableObject {
     
     func registerGameAsLost() async {
         let email = UserDefaults.standard.string(forKey: "userEmail") ?? ""
-        let levelNum = switch level {
-            case .Beginner: 1
-            case .Amateur: 2
-            case .Pro: 3
+        let totalExpectedGuesses = repo.guessesLeft + repo.distanceAccuracyList.count
+        guard totalExpectedGuesses == GUESS_LIMIT else {
+            self.errorMessage = "An internal error has occurred with the game. Please try again."
+            return
         }
         
-        print("*** Parameters ***")
-        print(repo.correctCountry)
-        print(email)
-        print(levelNum)
-                
+        let levelNum = switch level {
+            case .Beginner: 1
+            case .Amateur:  2
+            case .Pro:      3
+        }
+        
+        let accuracyInKm = repo.distanceAccuracyList.min() ?? 20000
+        
         let _ = await gameService.evaluateResult(
             email: email,
             level: levelNum,
             guessesLeft: 0,
-            accuracyInKm: 0.0, // TODO: This needs to be the sum of the accuracy in km for the previous guesses in this game + (10K * guessesLeft from userDefaults)
-            timeLapseInGame: 0
+            accuracyInKm: accuracyInKm,
+            timeLapseInGame: 0 // TODO: This needs to be the sum of the time lapses in seconds for the previous guesses in this game + (PRO_TIME_LIMIT * guessesLeft from userDefaults)
         )
     }
 
@@ -187,12 +192,19 @@ class SinglePlayViewModel: ObservableObject {
             self.suggestions = []
         }
         
+        let guessNumber = "\(6 - repo.guessesLeft)/5"
+        repo.guessesLeft = repo.guessesLeft - 1
+        self.guessesLeft = repo.guessesLeft
+        
         if currentGuess == "Invalid country name" || currentGuess == "Time up" {
             self.lastDistance = currentGuess
             self.lastDirection = ""
+            let accuracyInKm = repo.distanceAccuracyList.min() ?? 20000
+            repo.appendDistanceAccuracy(accuracyInKm)
         } else {
             if let res = await gameService.getClue(origin: currentGuess, destination: repo.correctCountry) {
                 if (Int(res.distance_km) == 0 && Int(res.bearing_degrees) == 0) {
+                    repo.appendDistanceAccuracy(0)
                     won = true
                     repo.won = true
                     // TODO: Call evaluateResult here because the player has won
@@ -200,17 +212,16 @@ class SinglePlayViewModel: ObservableObject {
                 } else {
                     self.lastDistance = "\(Int(res.distance_km)) km"
                     self.lastDirection = res.direction
+                    repo.appendDistanceAccuracy(Int(res.distance_km))
                 }
             } else {
                 self.lastDistance = "Unknown distance"
                 self.lastDirection = ""
+                // Since this is an internal error scenario and is not the fault of the player, add the best accuracy in km which is not 0. In Int, that value has to be 1.
+                repo.appendDistanceAccuracy(1)
             }
         }
-        
-        let guessNumber = "\(6 - repo.guessesLeft)/5"
-        repo.guessesLeft = repo.guessesLeft - 1
-        self.guessesLeft = repo.guessesLeft
-        
+                
         let newGuess = Guess(
             num: guessNumber,
             name: usersResponse,
