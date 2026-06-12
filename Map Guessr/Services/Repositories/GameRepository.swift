@@ -65,6 +65,20 @@ class GameRepository {
         currentList.append(value)
         timeLapseList = currentList
     }
+    
+    var totalTimeLapse: Int {
+        let currentSum = timeLapseList.reduce(0, +)
+        let count = timeLapseList.count
+        
+        if count == 5 {
+            return currentSum
+        } else if count < 5 {
+            let missingItems = 5 - count
+            return currentSum + (PRO_TIME_LIMIT * missingItems)
+        } else {
+            return -1
+        }
+    }
 
     func clearGame() {
         defaults.removeObject(forKey: scopedKey("correctCountryName"))
