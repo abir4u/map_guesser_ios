@@ -51,14 +51,30 @@ class CoreGameService: ObservableObject {
             return nil
         }
     }
+    
+    func getClue(origin: String, destination: String) async -> DistanceResponse? {
+        var components = URLComponents(string: AppConfig.Endpoints.distance)
+        components?.queryItems = [
+            URLQueryItem(name: "guessed_country", value: origin),
+            URLQueryItem(name: "correct_country", value: destination)
+        ]
+        
+        guard let url = components?.url else { return nil }
+        
+        do {
+            return try await NetworkClient.request(url, session: self.session)
+        } catch {
+            print("Error fetching clue: \(error)")
+            return nil
+        }
+    }
 
     func evaluateResult(
-        guessedCountry: String,
-        correctCountry: String,
         email: String,
         level: Int,
         guessesLeft: Int,
-        timeLeft: Int
+        accuracyInKm: Float,
+        timeLapseInGame: Int
     ) async -> DistanceResponse? {
         guard let url = URL(string: AppConfig.Endpoints.evaluate) else {
             return nil
@@ -70,12 +86,11 @@ class CoreGameService: ObservableObject {
         request.setValue("application/json", forHTTPHeaderField: "Accept")
 
         let body: [String: Any] = [
-            "guessed_country": guessedCountry,
-            "correct_country": correctCountry,
             "email": email,
             "level": level,
             "guesses_left": guessesLeft,
-            "time_left": timeLeft
+            "accuracy_in_km": accuracyInKm,
+            "time_lapse_in_game": timeLapseInGame
         ]
         
         do {

@@ -166,12 +166,11 @@ class SinglePlayViewModel: ObservableObject {
         print(levelNum)
                 
         let _ = await gameService.evaluateResult(
-            guessedCountry: "New Garia",
-            correctCountry: repo.correctCountry,
             email: email,
             level: levelNum,
             guessesLeft: 0,
-            timeLeft: 0
+            accuracyInKm: 0.0, // TODO: This needs to be the sum of the accuracy in km for the previous guesses in this game + (10K * guessesLeft from userDefaults)
+            timeLapseInGame: 0
         )
     }
 
@@ -192,26 +191,11 @@ class SinglePlayViewModel: ObservableObject {
             self.lastDistance = currentGuess
             self.lastDirection = ""
         } else {
-            let email = UserDefaults.standard.string(forKey: "userEmail") ?? ""
-            let levelNum = switch level {
-                case .Beginner: 1
-                case .Amateur: 2
-                case .Pro: 3
-            }
-            
-            let remainingTime: Int = (level == .Pro) ? max(0, self.timeElapsed) : 0
-            
-            if let res = await gameService.evaluateResult(
-                guessedCountry: currentGuess,
-                correctCountry: repo.correctCountry,
-                email: email,
-                level: levelNum,
-                guessesLeft: repo.guessesLeft - 1,
-                timeLeft: remainingTime
-            ) {
+            if let res = await gameService.getClue(origin: currentGuess, destination: repo.correctCountry) {
                 if (Int(res.distance_km) == 0 && Int(res.bearing_degrees) == 0) {
                     won = true
                     repo.won = true
+                    // TODO: Call evaluateResult here because the player has won
                     return
                 } else {
                     self.lastDistance = "\(Int(res.distance_km)) km"
@@ -238,6 +222,7 @@ class SinglePlayViewModel: ObservableObject {
         if repo.guessesLeft <= 0 {
             self.isGameOver = true
             repo.isGameOver = true
+            // TODO: Call evaluateResult here because the player has lost
         }
         
         if !(repo.won || repo.isGameOver) {

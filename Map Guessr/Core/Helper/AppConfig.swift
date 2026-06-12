@@ -29,6 +29,7 @@ enum AppConfig {
         static let auth = "\(AppConfig.baseURL)/auth/authenticate"
         static let countries = "\(AppConfig.baseURL)/geo/countries"
         static let outline = "\(AppConfig.baseURL)/geo/outline"
+        static let distance = "\(AppConfig.baseURL)/geo/distance"
         static let evaluate = "\(AppConfig.baseURL)/geo/evaluate"
     }
 }
