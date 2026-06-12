@@ -55,12 +55,24 @@ class GameRepository {
         distanceAccuracyList = currentList
     }
 
+    var timeLapseList: [Int] {
+        get { defaults.array(forKey: scopedKey("timeLapseList")) as? [Int] ?? [] }
+        set { defaults.set(newValue, forKey: scopedKey("timeLapseList")) }
+    }
+    
+    func appendTimeLapse(_ value: Int) {
+        var currentList = timeLapseList
+        currentList.append(value)
+        timeLapseList = currentList
+    }
+
     func clearGame() {
         defaults.removeObject(forKey: scopedKey("correctCountryName"))
         defaults.removeObject(forKey: scopedKey("won"))
         defaults.removeObject(forKey: scopedKey("isGameOver"))
         defaults.removeObject(forKey: scopedKey("storedCountryList"))
         defaults.removeObject(forKey: scopedKey("distanceAccuracyList"))
+        defaults.removeObject(forKey: scopedKey("timeLapseList"))
         guessesLeft = GUESS_LIMIT
     }
 }
