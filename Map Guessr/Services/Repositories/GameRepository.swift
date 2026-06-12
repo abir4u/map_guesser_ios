@@ -43,12 +43,24 @@ class GameRepository {
         get { defaults.stringArray(forKey: scopedKey("storedCountryList")) ?? [] }
         set { defaults.set(newValue, forKey: scopedKey("storedCountryList")) }
     }
+    
+    var distanceAccuracyList: [Int] {
+        get { defaults.array(forKey: scopedKey("distanceAccuracyList")) as? [Int] ?? [] }
+        set { defaults.set(newValue, forKey: scopedKey("distanceAccuracyList")) }
+    }
+    
+    func appendDistanceAccuracy(_ value: Int) {
+        var currentList = distanceAccuracyList
+        currentList.append(value)
+        distanceAccuracyList = currentList
+    }
 
     func clearGame() {
         defaults.removeObject(forKey: scopedKey("correctCountryName"))
         defaults.removeObject(forKey: scopedKey("won"))
         defaults.removeObject(forKey: scopedKey("isGameOver"))
         defaults.removeObject(forKey: scopedKey("storedCountryList"))
+        defaults.removeObject(forKey: scopedKey("distanceAccuracyList"))
         guessesLeft = GUESS_LIMIT
     }
 }
