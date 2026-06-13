@@ -49,4 +49,22 @@ class UserStatService: ObservableObject {
         
         return try await NetworkClient.requestStatus(request, session: self.session)
     }
+    
+    func fetchMyRecords(for email: String) async throws -> UserStatsSummaryResponse {
+            var components = URLComponents(string: AppConfig.Endpoints.statsSummary)
+            components?.queryItems = [
+                URLQueryItem(name: "email", value: email)
+            ]
+            
+            guard let url = components?.url else {
+                throw NetworkError.invalidURL
+            }
+            
+            var request = URLRequest(url: url)
+            request.httpMethod = "GET"
+            request.setValue("application/json", forHTTPHeaderField: "Accept")
+            
+            return try await NetworkClient.request(request, session: self.session)
+        }
+
 }

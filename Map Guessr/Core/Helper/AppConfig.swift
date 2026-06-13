@@ -31,5 +31,6 @@ enum AppConfig {
         static let outline = "\(AppConfig.baseURL)/geo/outline"
         static let distance = "\(AppConfig.baseURL)/geo/distance"
         static let evaluate = "\(AppConfig.baseURL)/stats/evaluate"
+        static let statsSummary = "\(AppConfig.baseURL)/stats/stats-summary"
     }
 }
