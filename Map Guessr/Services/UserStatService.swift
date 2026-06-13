@@ -9,8 +9,6 @@ import Foundation
 import SwiftUI
 internal import Combine
 
-import SwiftUI
-
 @MainActor
 class UserStatService: ObservableObject {
     private let session: URLSession
