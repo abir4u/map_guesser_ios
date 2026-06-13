@@ -187,6 +187,10 @@ class SinglePlayViewModel: ObservableObject {
     }
     
     func registerGameAsLost() async {
+        await invokeResultEvaluation()
+    }
+    
+    func invokeResultEvaluation() async {
         let email = UserDefaults.standard.string(forKey: "userEmail") ?? ""
         let isDistanceListInSync = repo.guessesLeft + repo.distanceAccuracyList.count
         guard isDistanceListInSync == GUESS_LIMIT else {
@@ -213,7 +217,6 @@ class SinglePlayViewModel: ObservableObject {
         } catch {
             self.errorMessage = error.localizedDescription
         }
-        
     }
 
     func submitGuess() async {
@@ -248,7 +251,7 @@ class SinglePlayViewModel: ObservableObject {
                     repo.appendDistanceAccuracy(0)
                     won = true
                     repo.won = true
-                    // TODO: Call evaluateResult here because the player has won
+                    await invokeResultEvaluation()
                     return
                 } else {
                     self.lastDistance = "\(Int(res.distance_km)) km"
@@ -273,7 +276,7 @@ class SinglePlayViewModel: ObservableObject {
         if repo.guessesLeft <= 0 {
             self.isGameOver = true
             repo.isGameOver = true
-            // TODO: Call evaluateResult here because the player has lost
+            await invokeResultEvaluation()
         }
         
         if !(repo.won || repo.isGameOver) {
