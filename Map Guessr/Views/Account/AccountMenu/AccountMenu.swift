@@ -8,6 +8,8 @@
 
 import SwiftUI
 
+let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
+
 struct AccountMenu: View {
     @ObservedObject var viewModel: HomeViewModel
     @Environment(\.dismiss) var dismiss
@@ -63,7 +65,7 @@ struct AccountMenu: View {
                 .disabled(viewModel.isLoading)
                 
                 VStack(spacing: 6) {
-                    Text("App Version 1.0.0")
+                    Text("App Version \(version)")
                         .font(.footnote)
                         .foregroundColor(.secondary)
                     
@@ -103,7 +105,7 @@ struct AccountMenu: View {
                 .shadow(radius: 10)
             }
         }
-        .navigationTitle("Account")
+        .navigationTitle("My Account")
         .navigationBarTitleDisplayMode(.inline)
         .alert("Sure you want to delete your account?", isPresented: $showingDeleteConfirmation) {
             Button("Yes", role: .destructive) {
