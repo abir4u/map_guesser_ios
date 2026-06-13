@@ -42,33 +42,6 @@ class SinglePlayViewModel: ObservableObject {
         return String(format: "%02d:%02d", minutes, seconds)
     }
     
-    var totalTimeLapse: Int {
-        let notAPro = 0
-        
-        if level == .Pro {
-            let isTimeListInSync = repo.guessesLeft + repo.timeLapseList.count
-            guard isTimeListInSync == GUESS_LIMIT else {
-                self.errorMessage = "An internal error has occurred with the game."
-                return -1
-            }
-
-            let currentSum = repo.timeLapseList.reduce(0, +)
-            let count = repo.timeLapseList.count
-            
-            if count == GUESS_LIMIT {
-                return currentSum
-            } else if count < GUESS_LIMIT {
-                let missingItems = GUESS_LIMIT - count
-                return currentSum + (PRO_TIME_LIMIT * missingItems)
-            } else {
-                self.errorMessage = "An internal error has occurred with the game."
-                return -1
-            }
-        }
-        
-        return notAPro
-    }
-
     init(level: Level, timerProvider: TimerProvider? = nil) {
         self.level = level
         self.timerProvider = timerProvider ?? GameTimerProvider()
@@ -187,10 +160,10 @@ class SinglePlayViewModel: ObservableObject {
     }
     
     func registerGameAsLost() async {
-        await invokeResultEvaluation()
+        await invokeResultEvaluation(hasQuit: true)
     }
     
-    func invokeResultEvaluation() async {
+    func invokeResultEvaluation(hasQuit: Bool) async {
         let email = UserDefaults.standard.string(forKey: "userEmail") ?? ""
         let isDistanceListInSync = repo.guessesLeft + repo.distanceAccuracyList.count
         guard isDistanceListInSync == GUESS_LIMIT else {
@@ -205,6 +178,7 @@ class SinglePlayViewModel: ObservableObject {
         }
         
         let accuracyInKm = repo.distanceAccuracyList.min() ?? DEFAULT_WORST_ACCURACY
+        let timeLapseInGame = totalTimeLapse(hasQuit: hasQuit)
 
         do {
             let _ = try await gameService.evaluateResult(
@@ -212,12 +186,39 @@ class SinglePlayViewModel: ObservableObject {
                 level: levelNum,
                 guessesLeft: 0,
                 accuracyInKm: accuracyInKm,
-                timeLapseInGame: totalTimeLapse
+                timeLapseInGame: timeLapseInGame
             )
         } catch {
             self.errorMessage = error.localizedDescription
         }
     }
+    
+    func totalTimeLapse(hasQuit: Bool) -> Int {
+        let notAPro = 0
+        
+        if level == .Pro {
+            let isTimeListInSync = repo.guessesLeft + repo.timeLapseList.count
+            guard isTimeListInSync == GUESS_LIMIT else {
+                self.errorMessage = "An internal error has occurred with the game."
+                return -1
+            }
+
+            let currentSum = repo.timeLapseList.reduce(0, +)
+            let count = repo.timeLapseList.count
+            
+            if ((count < GUESS_LIMIT) && hasQuit) {
+                return currentSum + (PRO_TIME_LIMIT * repo.guessesLeft)
+            } else if (count == GUESS_LIMIT) || (count < GUESS_LIMIT) {
+                return currentSum
+            } else {
+                self.errorMessage = "An internal error has occurred with the game."
+                return -1
+            }
+        }
+    
+        return notAPro
+    }
+
 
     func submitGuess() async {
         let usersResponse = guessText.trimmingCharacters(in: .whitespaces)
@@ -226,7 +227,6 @@ class SinglePlayViewModel: ObservableObject {
         
         if level == .Pro {
             repo.appendTimeLapse(self.timeElapsed)
-            print(self.timeElapsed)
         }
         stopTimer()
         isLoading = true
@@ -251,7 +251,7 @@ class SinglePlayViewModel: ObservableObject {
                     repo.appendDistanceAccuracy(0)
                     won = true
                     repo.won = true
-                    await invokeResultEvaluation()
+                    await invokeResultEvaluation(hasQuit: false)
                     return
                 } else {
                     self.lastDistance = "\(Int(res.distance_km)) km"
@@ -276,7 +276,7 @@ class SinglePlayViewModel: ObservableObject {
         if repo.guessesLeft <= 0 {
             self.isGameOver = true
             repo.isGameOver = true
-            await invokeResultEvaluation()
+            await invokeResultEvaluation(hasQuit: false)
         }
         
         if !(repo.won || repo.isGameOver) {
