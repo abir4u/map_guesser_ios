@@ -35,6 +35,7 @@ class SinglePlayViewModel: ObservableObject {
     private let timerProvider: TimerProvider
     private let repo: GameRepository
     private let gameService = CoreGameService()
+    private let statService = UserStatService()
     
     var formattedTime: String {
         let minutes = max(0, timeElapsed) / 60
@@ -182,7 +183,7 @@ class SinglePlayViewModel: ObservableObject {
         let correctCountry = repo.correctCountry
 
         do {
-            let _ = try await gameService.evaluateResult(
+            let _ = try await statService.evaluateResult(
                 email: email,
                 level: levelNum,
                 guessesLeft: 0,
