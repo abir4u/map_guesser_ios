@@ -9,7 +9,7 @@ import SwiftUI
 
 struct MasteryRingCard: View {
     let level: Level
-    let winRate: Double
+    let winRate: Int
     let milestoneText: String
     
     var body: some View {
@@ -19,16 +19,16 @@ struct MasteryRingCard: View {
                     .stroke(Color(.systemGray5), lineWidth: 16)
                 
                 Circle()
-                    .trim(from: 0.0, to: winRate)
+                    .trim(from: 0.0, to: winRate == -1 ? 0.0 : (Double(winRate) / 100.0))
                     .stroke(
                         level.color,
                         style: StrokeStyle(lineWidth: 16, lineCap: .round)
                     )
                     .rotationEffect(.degrees(-90))
-                    .animation(.spring(response: 0.6, dampingFraction: 0.8), value: level)
+                    .animation(.spring(response: 0.6, dampingFraction: 0.8), value: winRate)
                 
                 VStack {
-                    Text("\(Int(winRate * 100))%")
+                    Text(winRate == -1 ? "N/A" : "\(winRate)%")
                         .font(.system(.largeTitle, design: .rounded))
                         .bold()
                         .foregroundColor(Color(.label))
