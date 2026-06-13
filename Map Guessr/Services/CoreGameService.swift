@@ -72,7 +72,8 @@ class CoreGameService: ObservableObject {
         level: Int,
         guessesLeft: Int,
         accuracyInKm: Int,
-        timeLapseInGame: Int
+        timeLapseInGame: Int,
+        correctCountry: String
     ) async throws -> Bool {
         guard let url = URL(string: AppConfig.Endpoints.evaluate) else {
             throw NetworkError.invalidURL
@@ -88,7 +89,8 @@ class CoreGameService: ObservableObject {
             "level": level,
             "guesses_left": guessesLeft,
             "accuracy_in_km": accuracyInKm,
-            "time_lapse_in_game": timeLapseInGame
+            "time_lapse_in_game": timeLapseInGame,
+            "correct_country": correctCountry
         ]
         
         request.httpBody = try JSONSerialization.data(withJSONObject: body)
