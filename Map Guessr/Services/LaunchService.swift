@@ -28,10 +28,15 @@ class LaunchService: ObservableObject {
         
         let urlString = "\(AppConfig.Endpoints.features)?version=\(version)&environment=\(environment)"
         
-        guard let url = URL(string: urlString) else { return }
+        guard let url = URL(string: urlString) else {
+            self.flags = self.defaultFlags
+            return
+        }
         
         do {
-            let fetchedFlags: FeatureFlags = try await NetworkClient.request(url)
+            let request = URLRequest(url: url)
+            
+            let fetchedFlags: FeatureFlags = try await NetworkClient.request(request)
             self.flags = fetchedFlags
         } catch {
             print("Failed to fetch flags: \(error). Using defaults.")

@@ -23,7 +23,8 @@ class CoreGameService: ObservableObject {
         guard let url = URL(string: AppConfig.Endpoints.countries) else { return [] }
         
         do {
-            let response: CountryResponse = try await NetworkClient.request(url, session: self.session)
+            let request = URLRequest(url: url)
+            let response: CountryResponse = try await NetworkClient.request(request, session: self.session)
             return response.countries
         } catch {
             print("Error fetching countries: \(error)")
@@ -38,13 +39,9 @@ class CoreGameService: ObservableObject {
         }
         
         do {
-            let (data, response) = try await self.session.data(from: url)
-            
-            guard (response as? HTTPURLResponse)?.statusCode == 200,
-                  let uiImage = UIImage(data: data) else {
-                return nil
-            }
-            
+            let request = URLRequest(url: url)
+            let data = try await NetworkClient.requestData(request, session: self.session)
+            guard let uiImage = UIImage(data: data) else { return nil }
             return Image(uiImage: uiImage)
         } catch {
             print("Error fetching outline: \(error)")
@@ -62,7 +59,8 @@ class CoreGameService: ObservableObject {
         guard let url = components?.url else { return nil }
         
         do {
-            return try await NetworkClient.request(url, session: self.session)
+            let request = URLRequest(url: url)
+            return try await NetworkClient.request(request, session: self.session)
         } catch {
             print("Error fetching clue: \(error)")
             return nil
@@ -75,9 +73,9 @@ class CoreGameService: ObservableObject {
         guessesLeft: Int,
         accuracyInKm: Int,
         timeLapseInGame: Int
-    ) async -> DistanceResponse? {
+    ) async throws -> Bool {
         guard let url = URL(string: AppConfig.Endpoints.evaluate) else {
-            return nil
+            throw NetworkError.invalidURL
         }
         
         var request = URLRequest(url: url)
@@ -93,27 +91,8 @@ class CoreGameService: ObservableObject {
             "time_lapse_in_game": timeLapseInGame
         ]
         
-        do {
-            request.httpBody = try JSONSerialization.data(withJSONObject: body)
-        } catch {
-            print("Encoding error: \(error)")
-            return nil
-        }
+        request.httpBody = try JSONSerialization.data(withJSONObject: body)
         
-        do {
-            let (data, response) = try await self.session.data(for: request)
-            
-            guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-                if let errorString = String(data: data, encoding: .utf8) {
-                    print("Server error response: \(errorString)")
-                }
-                return nil
-            }
-            
-            return try JSONDecoder().decode(DistanceResponse.self, from: data)
-        } catch {
-            print("Network or parsing error: \(error)")
-            return nil
-        }
+        return try await NetworkClient.requestStatus(request, session: self.session)
     }
 }

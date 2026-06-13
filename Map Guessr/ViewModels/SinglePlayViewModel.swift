@@ -201,14 +201,19 @@ class SinglePlayViewModel: ObservableObject {
         }
         
         let accuracyInKm = repo.distanceAccuracyList.min() ?? DEFAULT_WORST_ACCURACY
-                
-        let _ = await gameService.evaluateResult(
-            email: email,
-            level: levelNum,
-            guessesLeft: 0,
-            accuracyInKm: accuracyInKm,
-            timeLapseInGame: totalTimeLapse
-        )
+
+        do {
+            let _ = try await gameService.evaluateResult(
+                email: email,
+                level: levelNum,
+                guessesLeft: 0,
+                accuracyInKm: accuracyInKm,
+                timeLapseInGame: totalTimeLapse
+            )
+        } catch {
+            self.errorMessage = error.localizedDescription
+        }
+        
     }
 
     func submitGuess() async {
