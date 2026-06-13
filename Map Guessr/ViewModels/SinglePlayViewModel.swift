@@ -181,12 +181,13 @@ class SinglePlayViewModel: ObservableObject {
         let accuracyInKm = repo.distanceAccuracyList.min() ?? DEFAULT_WORST_ACCURACY
         let timeLapseInGame = totalTimeLapse(hasQuit: hasQuit)
         let correctCountry = repo.correctCountry
+        let guessesLeft = repo.guessesLeft
 
         do {
             let _ = try await statService.evaluateResult(
                 email: email,
                 level: levelNum,
-                guessesLeft: 0,
+                guessesLeft: guessesLeft,
                 accuracyInKm: accuracyInKm,
                 timeLapseInGame: timeLapseInGame,
                 correctCountry: correctCountry
