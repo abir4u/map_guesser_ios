@@ -43,7 +43,7 @@ class SinglePlayViewModel: ObservableObject {
     }
     
     var totalTimeLapse: Int {
-        var notAPro = 0
+        let notAPro = 0
         
         if level == .Pro {
             let isTimeListInSync = repo.guessesLeft + repo.timeLapseList.count
