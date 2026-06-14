@@ -75,8 +75,7 @@ struct MyRecordsView: View {
                             )
                         }
                         
-                        AccuracyFootprintView(level: selectedDifficulty)
-                        
+                        WorldChoroplethCard(coverageSummary: stats.coverageSummary)
                     }
                     .padding()
                 }
@@ -104,11 +103,5 @@ struct MyRecordsView: View {
         .task {
             await viewModel.loadUserDashboard()
         }
-    }
-}
-
-struct MyRecordsView_Previews: PreviewProvider {
-    static var previews: some View {
-        MyRecordsView()
     }
 }
