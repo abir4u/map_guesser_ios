@@ -38,13 +38,16 @@ struct QuitAlertModifier: ViewModifier {
                 }
             }
             .alert("Quit Game?", isPresented: $showingAlert) {
-                Button("No", role: .cancel) { }
-                Button("Yes", role: .destructive) {
+                Button("Keep Playing", role: .confirm) { }
+                Button("Pause & Save", role: .close) {
+                    dismiss()
+                }
+                Button("Quit Game", role: .cancel) {
                     onConfirm()
                     dismiss()
                 }
             } message: {
-                Text("Sure to quit? Your progress will be lost and it may affect your records.")
+                Text("Pause & Save recommended. Quit Game will reset your progress.")
             }
     }
 }
