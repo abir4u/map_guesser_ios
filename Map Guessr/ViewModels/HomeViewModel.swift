@@ -46,6 +46,7 @@ class HomeViewModel: ObservableObject {
         } catch {
             print("❌ Failed to clear database cache: \(error.localizedDescription)")
         }
+        UserDefaults.standard.removeObject(forKey: "needRecordUpdate")
     }
 
     func handleButtonTap(mode: GameMode) {
