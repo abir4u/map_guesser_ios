@@ -34,31 +34,36 @@ class MyRecordsViewModel: ObservableObject {
     }
     
     func loadUserDashboard() async {
-            let currentTime = Date()
-            
-            if let lastFetch = self.lastFetchTimestamp, currentTime.timeIntervalSince(lastFetch) < 60 {
-                print("⏱️ Data requested too soon. Skipping network call and using cached data.")
+        let currentTime = Date()
+        
+        let isFetchedRecently = self.lastFetchTimestamp.map { currentTime.timeIntervalSince($0) < 60 } ?? false
+        let isRecordUpToDate = !UserDefaults.standard.bool(forKey: "needRecordUpdate")
+        
+        if isFetchedRecently && stats != nil {
+            if isRecordUpToDate {
                 return
             }
-                            
-            do {
-                let email = UserDefaults.standard.string(forKey: "userEmail") ?? ""
-                let fetchedStats = try await statService.fetchMyRecords(for: email)
+        }
+                                
+        do {
+            let email = UserDefaults.standard.string(forKey: "userEmail") ?? ""
+            let fetchedStats = try await statService.fetchMyRecords(for: email)
+            
+            if let context = modelContext {
+                try? context.delete(model: CachedUserStats.self)
                 
-                if let context = modelContext {
-                    try? context.delete(model: CachedUserStats.self)
-                    
-                    let newRecord = CachedUserStats(lastUpdated: currentTime, response: fetchedStats)
-                    context.insert(newRecord)
-                    try? context.save()
-                    
-                    self.stats = newRecord
-                    self.lastFetchTimestamp = currentTime
-                }
-            } catch {
-                if self.stats == nil {
-                    self.errorMessage = error.localizedDescription
-                }
+                let newRecord = CachedUserStats(lastUpdated: currentTime, response: fetchedStats)
+                context.insert(newRecord)
+                try? context.save()
+                
+                self.stats = newRecord
+                self.lastFetchTimestamp = currentTime
+                UserDefaults.standard.set(false, forKey: "needRecordUpdate")
+            }
+        } catch {
+            if self.stats == nil {
+                self.errorMessage = error.localizedDescription
             }
         }
+    }
 }

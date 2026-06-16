@@ -195,6 +195,10 @@ class SinglePlayViewModel: ObservableObject {
         } catch {
             self.errorMessage = error.localizedDescription
         }
+        
+        if self.errorMessage == "" || self.errorMessage == nil {
+            UserDefaults.standard.set(true, forKey: "needRecordUpdate")
+        }
     }
     
     func totalTimeLapse(hasQuit: Bool) -> Int {
