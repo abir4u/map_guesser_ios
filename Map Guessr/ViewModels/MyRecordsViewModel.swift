@@ -65,5 +65,7 @@ class MyRecordsViewModel: ObservableObject {
                 self.errorMessage = error.localizedDescription
             }
         }
+        
+        AppAnalytics.shared.logScreen(.records)
     }
 }
