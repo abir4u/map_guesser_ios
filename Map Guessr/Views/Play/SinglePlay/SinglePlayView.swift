@@ -97,6 +97,18 @@ struct SinglePlayView: View {
                             .fontWeight(.bold)
                     }
                 }
+                if launchService.flags?.my_records == true {
+                    if UserDefaults.standard.bool(forKey: "isLoggedIn") {
+                        ToolbarItem(placement: .topBarTrailing) {
+                            NavigationLink(destination: MyRecordsView()) {
+                                Image(systemName: "chart.xyaxis.line")
+                                    .symbolRenderingMode(.palette)
+                                    .foregroundStyle(.blue)
+                            }
+                        }
+                    }
+                }
+                
             }
             .navigationTitle(level == .Pro ? "" : "Solo Play")
             .navigationBarTitleDisplayMode(.inline)
