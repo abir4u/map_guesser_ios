@@ -10,7 +10,7 @@ import SwiftUI
 import MapKit
 
 struct AdvancedChoroplethMap: UIViewRepresentable {
-    let coverageSummary: [CountrySummary]
+    let coverageSummary: [CachedCountrySummary]
     
     private var countryPerformance: [String: Int] {
         Dictionary(uniqueKeysWithValues: coverageSummary.map { ($0.country, $0.performanceSummary) })

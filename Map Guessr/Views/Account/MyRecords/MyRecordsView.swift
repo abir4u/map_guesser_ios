@@ -10,8 +10,9 @@ import SwiftUI
 struct MyRecordsView: View {
     @StateObject private var viewModel = MyRecordsViewModel()
     @State private var selectedDifficulty: Level = .Beginner
+    @Environment(\.modelContext) private var databaseContext
     
-    private var currentStats: DifficultyStats? {
+    private var currentStats: CachedDifficultyStats? {
         guard let stats = viewModel.stats else { return nil }
         switch selectedDifficulty {
         case .Beginner: return stats.beginner
@@ -101,6 +102,7 @@ struct MyRecordsView: View {
         .navigationTitle("My Records")
         .toolbarBackground(Color(red: 0.96, green: 0.97, blue: 0.99), for: .navigationBar)
         .task {
+            viewModel.setupDatabaseContext(databaseContext)
             await viewModel.loadUserDashboard()
         }
     }

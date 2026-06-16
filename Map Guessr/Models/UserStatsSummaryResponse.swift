@@ -7,7 +7,7 @@
 
 
 struct UserStatsSummaryResponse: Decodable, Sendable {
-    let beginner: DifficultyStats
-    let amateur: DifficultyStats
-    let pro: DifficultyStats
+    let beginner: CachedDifficultyStats
+    let amateur: CachedDifficultyStats
+    let pro: CachedDifficultyStats
 }

@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct WorldChoroplethCard: View {
-    let coverageSummary: [CountrySummary]
+    let coverageSummary: [CachedCountrySummary]
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
