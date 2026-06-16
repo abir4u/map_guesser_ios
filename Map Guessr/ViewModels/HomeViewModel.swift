@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import SwiftData
 import AuthenticationServices
 internal import Combine
 
@@ -20,6 +21,7 @@ class HomeViewModel: ObservableObject {
     @Published var authService: AuthService
     
     private var pendingMode: GameMode?
+    private var modelContext: ModelContext?
 
     var isLoggedIn: Bool {
         authService.isLoggedIn
@@ -27,6 +29,23 @@ class HomeViewModel: ObservableObject {
     
     init(authService: AuthService? = nil) {
         self.authService = authService ?? AuthService()
+    }
+    
+    func setupDatabaseContext(_ context: ModelContext) {
+        self.modelContext = context
+    }
+    
+    private func clearAllCachedData() {
+        guard let context = modelContext else {
+            return
+        }
+        
+        do {
+            try context.delete(model: CachedUserStats.self)
+            try context.save()
+        } catch {
+            print("❌ Failed to clear database cache: \(error.localizedDescription)")
+        }
     }
 
     func handleButtonTap(mode: GameMode) {
@@ -71,6 +90,7 @@ class HomeViewModel: ObservableObject {
     }
     
     func logout() {
+        clearAllCachedData()
         authService.logout()
         path = NavigationPath()
         AppAnalytics.shared.logEvent(.logoutTapped)
@@ -83,6 +103,7 @@ class HomeViewModel: ObservableObject {
         do {
             try await authService.deleteAccount()
             showingDeleteSuccess = true
+            clearAllCachedData()
             AppAnalytics.shared.logEvent(.deleteAccountTapped)
         } catch {
             errorMessage = error.localizedDescription
