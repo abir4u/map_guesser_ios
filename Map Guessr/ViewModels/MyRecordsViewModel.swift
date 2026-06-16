@@ -39,8 +39,8 @@ class MyRecordsViewModel: ObservableObject {
         let isFetchedRecently = self.lastFetchTimestamp.map { currentTime.timeIntervalSince($0) < 60 } ?? false
         let isRecordUpToDate = !UserDefaults.standard.bool(forKey: "needRecordUpdate")
         
-        if isFetchedRecently && stats != nil {
-            if isRecordUpToDate {
+        if isRecordUpToDate && stats != nil {
+            if isFetchedRecently {
                 return
             }
         }
