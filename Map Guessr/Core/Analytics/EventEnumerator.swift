@@ -11,6 +11,7 @@ enum AppScreen: String {
     case home = "Home Screen"
     case play = "Game Play Screen"
     case account = "User Account Screen"
+    case records = "My Records Screen"
     
     // Generates a technical class name string for Firebase (e.g., "home")
     var className: String { return String(describing: self) }
@@ -33,10 +34,12 @@ enum AppEvent {
     case optionTapped
     case winSheetContinueTapped
     case lossSheetContinueTapped
+    case recordsTappedFromGame
     
     // --- Account Screen Events ---
     case logoutTapped
     case deleteAccountTapped
+    case recordsTappedFromAccount
     
     var details: (name: String, parameters: [String: Any]?) {
         switch self {
@@ -67,12 +70,16 @@ enum AppEvent {
             return ("win_sheet_continue_tapped", nil)
         case .lossSheetContinueTapped:
             return ("loss_sheet_continue_tapped", nil)
-            
+        case .recordsTappedFromGame:
+            return ("records_tapped_from_game", nil)
+
         // --- Account ---
         case .logoutTapped:
             return ("logout_tapped", nil)
         case .deleteAccountTapped:
             return ("delete_account_tapped", nil)
+        case .recordsTappedFromAccount:
+            return ("records_tapped_from_account", nil)
         }
     }
 }
