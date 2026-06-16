@@ -66,7 +66,7 @@ struct AdvancedChoroplethMap: UIViewRepresentable {
             var countryName = ""
             if let propertiesData = feature.properties,
                let props = try? JSONSerialization.jsonObject(with: propertiesData) as? [String: Any] {
-                countryName = props["admin"] as? String ?? ""
+                countryName = props["name_en"] as? String ?? ""
             }
             
             guard !countryName.isEmpty else { continue }
