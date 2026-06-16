@@ -15,7 +15,8 @@ struct SinglePlayView: View {
     @State private var confettiCounter: Int = 0
     @FocusState private var isTextFieldFocused: Bool
     @Environment(\.requestReview) var requestReview
-    
+    @EnvironmentObject var launchService: LaunchService
+
     @AppStorage("winCount") private var winCount = 0
     
     @MainActor
