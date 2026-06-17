@@ -102,7 +102,7 @@ struct HomeView: View {
                     AppShareButton()
                 }
                 if launchService.flags?.authenticate_soloplay ?? false {
-                    if viewModel.isLoggedIn {
+                    if UserDefaults.standard.bool(forKey: "isLoggedIn") {
                         ToolbarItem(placement: .navigationBarTrailing) {
                             NavigationLink(destination: AccountMenu(viewModel: viewModel)) {
                                 Image(systemName: "person.crop.circle")
@@ -134,7 +134,7 @@ struct HomeView: View {
                 }
             }
             .sheet(isPresented: $showingLoginOptions) {
-                LoginOptionsSheet(viewModel: viewModel, selectedMode: activeSheet)
+                LoginOptionsSheet(viewModel: viewModel)
             }
         }
         .onAppear {

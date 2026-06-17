@@ -10,8 +10,14 @@ import AuthenticationServices
 
 struct LoginOptionsSheet: View {
     @ObservedObject var viewModel: HomeViewModel
-    let selectedMode: GameMode
     @Environment(\.dismiss) var dismiss
+    
+    let onLoginCompletion: (() -> Void)?
+    
+    init(viewModel: HomeViewModel, onLoginCompletion: (@MainActor () -> Void)? = nil) {
+        self.viewModel = viewModel
+        self.onLoginCompletion = onLoginCompletion
+    }
     
     var body: some View {
         VStack(spacing: 30) {
@@ -32,6 +38,7 @@ struct LoginOptionsSheet: View {
                         await viewModel.loginAndRefreshPage(via: "Apple") {
                             try await viewModel.authService.handleAppleLogin(result: result)
                         }
+                        onLoginCompletion?()
                         dismiss()
                     }
                 }
@@ -44,6 +51,7 @@ struct LoginOptionsSheet: View {
                         await viewModel.loginAndRefreshPage(via: "Google") {
                             try await viewModel.authService.handleGoogleLogin()
                         }
+                        onLoginCompletion?()
                         dismiss()
                     }
                 }

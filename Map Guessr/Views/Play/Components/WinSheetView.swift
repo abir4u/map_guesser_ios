@@ -11,6 +11,7 @@ import ConfettiSwiftUI
 struct WinSheetView: View {
     let correctCountry: String
     let onContinue: () -> Void
+    let triggerLogin: () -> Void
     
     @State private var sheetConfetti: Int = 0
     
@@ -55,15 +56,30 @@ struct WinSheetView: View {
                     .stroke(Color.blue.opacity(0.1), lineWidth: 1)
             )
 
-            Button(action: onContinue) {
-                Label("Next Challenge", systemImage: "play.fill")
-                    .font(.headline)
-                    .foregroundColor(.white)
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color.blue)
-                    .clipShape(RoundedRectangle(cornerRadius: 16))
-                    .shadow(color: .blue.opacity(0.3), radius: 10, y: 5)
+            VStack(spacing: 12) {
+                Button(action: onContinue) {
+                    Label("Next Challenge", systemImage: "play.fill")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.blue)
+                        .clipShape(RoundedRectangle(cornerRadius: 16))
+                        .shadow(color: .blue.opacity(0.3), radius: 10, y: 5)
+                }
+                
+                if !UserDefaults.standard.bool(forKey: "isLoggedIn") {
+                    Button(action: triggerLogin) {
+                        Label("Unlock My Records", systemImage: "chart.xyaxis.line")
+                            .font(.headline)
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.purple)
+                            .clipShape(RoundedRectangle(cornerRadius: 16))
+                            .shadow(color: .purple.opacity(0.3), radius: 10, y: 5)
+                    }
+                }
             }
         }
         .padding(32)
