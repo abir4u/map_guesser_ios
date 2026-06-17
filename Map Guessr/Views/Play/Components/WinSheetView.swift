@@ -16,22 +16,22 @@ struct WinSheetView: View {
     @State private var sheetConfetti: Int = 0
     
     var body: some View {
-        VStack(spacing: 32) {
+        VStack(spacing: 24) {
             VStack(spacing: 16) {
                 ZStack {
                     Circle()
                         .fill(Color.yellow.opacity(0.2))
-                        .frame(width: 140, height: 140)
+                        .frame(width: 110, height: 110)
                         .blur(radius: 20)
                     
                     Text("🎉")
-                        .font(.system(size: 80))
+                        .font(.system(size: 70))
                 }
                 .padding(.top, 10)
                 
                 VStack(spacing: 8) {
                     Text("Congratulations!")
-                        .font(.system(.largeTitle, design: .rounded).bold())
+                        .font(.system(.title, design: .rounded).bold())
                     
                     Text("You identified the country perfectly!")
                         .font(.title3)
@@ -82,7 +82,9 @@ struct WinSheetView: View {
                 }
             }
         }
-        .padding(32)
+        .padding(.horizontal, 24)
+        .padding(.top, 16)
+        .padding(.bottom, 24)
         .multilineTextAlignment(.center)
         .interactiveDismissDisabled(true)
         .confettiCannon(trigger: $sheetConfetti, num: 30, radius: 400.0)

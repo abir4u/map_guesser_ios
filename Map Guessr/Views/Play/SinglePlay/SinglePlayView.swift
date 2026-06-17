@@ -135,8 +135,8 @@ struct SinglePlayView: View {
                     singlePlayViewModel.won = false
                     showingLoginOptions = true
                 }
-                .presentationDetents([.medium])
-                .frame(maxWidth: .infinity, minHeight: 900)
+                .presentationDetents([.height(UserDefaults.standard.bool(forKey: "isLoggedIn") ? 420 : 520)])
+                .presentationDragIndicator(.visible)
                 .interactiveDismissDisabled()
                 .onAppear {
                     confettiCounter += 1
